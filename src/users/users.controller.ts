@@ -4,6 +4,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Response, Request } from 'express';
+import { CreateActivityDto } from 'src/activities/dto/create-activity.dto';
+import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
 
 @Controller('users')
 export class UsersController {
@@ -29,6 +31,32 @@ export class UsersController {
   async user(@Req() request: Request) {
     return this.usersService.getUser(request)
   }
+
+  @Get('test')
+  async getTest() {
+    return this.usersService.getTest()
+  }
+
+  @Post('dateAc')
+  async postActivities(@Body() createUserActivityDto : CreateUserActivityDto) {
+    return this.usersService.postUserActivities(createUserActivityDto);
+  }
+
+  @Post('dateAc2')
+  async postActivities2(@Body() createUserActivityDto : CreateUserActivityDto,
+                        @Req() request: Request) {
+    return this.usersService.postUserActivities2(createUserActivityDto,request);
+  }
+
+  // @Get('activity')
+  // async activity() {
+
+  // }
+
+  // @Post('createActivity')
+  // async createActivity(@Body() createActivityDto : CreateActivityDto) {
+  //   return this.usersService.createActivity(createActivityDto);
+  // }
 
   // @Get()
   // findAll() {

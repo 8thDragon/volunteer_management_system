@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
+import { ActivitiesService } from './activities.service';
+import { ActivitiesController } from './activities.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { ConfigModule, ConfigService } from '@nestjs/config/dist';
-import { User } from './entities/user.entity';
-import { JwtModule } from '@nestjs/jwt/dist';
-import { Activity } from 'src/activities/entities/activity.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User } from 'src/users/entities/user.entity';
+import { Activity } from './entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 
 @Module({
@@ -36,12 +35,8 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
       Activity,
       UserActivity
     ]),
-    JwtModule.register({
-      secret: 'secret',
-      signOptions: {expiresIn: '1w'}
-    })
   ],
-  controllers: [UsersController],
-  providers: [UsersService, ConfigService]
+  controllers: [ActivitiesController],
+  providers: [ActivitiesService]
 })
-export class UsersModule {}
+export class ActivitiesModule {}

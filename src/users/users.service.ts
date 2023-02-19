@@ -9,13 +9,22 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { where } from 'sequelize';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
+import { Activity } from 'src/activities/entities/activity.entity';
+import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
+import { CreateActivityDto } from 'src/activities/dto/create-activity.dto';
+import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
+// import { CreateActivityDto } from './dto/create-activity.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @InjectModel(Activity)
+    private activityModel: typeof Activity,
+    @InjectModel(UserActivity)
+    private userActivityModel: typeof UserActivity,
 ) {}
   async createUser(createUserDto : CreateUserDto) {
     let response = new ResponseStandard()
@@ -32,6 +41,60 @@ export class UsersService {
       response.result = user
     }
     return result
+  }
+  
+  async postUserActivities(createUserActivityDto : CreateUserActivityDto) {
+    let response = new ResponseStandard()
+    let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
+      userId: createUserActivityDto.userId,
+      activityId: createUserActivityDto.activityId,
+      } })
+    
+    console.log(createUserActivityDto.date,typeof createUserActivityDto.date)
+    console.log(userActiv.date,typeof userActiv.date)
+    if (created) {
+      userActiv.update({date: [createUserActivityDto.date]})
+      response.success = true
+      response.result = userActiv
+    } else {
+      if (!(userActiv.date.includes(createUserActivityDto.date))) {
+        let allDate = [...userActiv.date,createUserActivityDto.date]
+        userActiv.update({date: allDate})
+      }
+      response.result = userActiv
+    }
+
+    return response
+  }
+
+  async postUserActivities2(createUserActivityDto: CreateUserActivityDto,request: Request) {
+    let response = new ResponseStandard()
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    if (data['id']) {
+      let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
+        userId: data['id'],
+        activityId: createUserActivityDto.activityId,
+        } })
+      
+      console.log(createUserActivityDto.date,typeof createUserActivityDto.date)
+      console.log(userActiv.date,typeof userActiv.date)
+      if (created) {
+        userActiv.update({date: [createUserActivityDto.date]})
+        response.success = true
+        response.result = userActiv
+      } else {
+        if (!(userActiv.date.includes(createUserActivityDto.date))) {
+          let allDate = [...userActiv.date,createUserActivityDto.date]
+          userActiv.update({date: allDate})
+        }
+        response.result = userActiv
+      }
+    } else {
+      throw new BadRequestException('You are not loging in!!!')
+    }
+
+    return response
   }
 
   findAll() {
@@ -87,6 +150,12 @@ export class UsersService {
       message: 'success'
     }
   }
+
+  async getTest() {
+    return this.userModel.findAll({include: [Activity]})
+    // return this.activityModel.findAll({include: [User]})
+  }
+
 
   findOne(id: number) {
     return `This action returns a #${id} user`;
