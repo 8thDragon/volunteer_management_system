@@ -48,6 +48,12 @@ export class UsersController {
     return this.usersService.postUserActivities2(createUserActivityDto,request);
   }
 
+  @Patch('update_user')
+  updateUser(@Req() request: Request,
+              @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUser(updateUserDto, request);
+  }
+
   // @Get('activity')
   // async activity() {
 

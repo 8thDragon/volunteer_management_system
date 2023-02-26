@@ -97,8 +97,21 @@ export class UsersService {
     return response
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async updateUser(updateUserDto: UpdateUserDto, request: Request) {
+    let response = new ResponseStandard()
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let user = await this.userModel.findByPk(data['id'])
+        if (!user) {
+            response.success = false;
+            response.error_code = '404';
+            response.error_message = 'Account Not Found';
+            return response;
+        }
+        await user.update({ ...updateUserDto });
+        response.success = true;
+        response.result = { ...updateUserDto };
+        return response;
   }
 
   async getUserByEmail(loginUserDTo : LoginUserDto, response : Response): Promise<any> {

@@ -23,4 +23,19 @@ export class ActivitiesService {
     }
     return response
   }
+
+  async updateActivity(id: number, updateActivityDto: UpdateActivityDto): Promise<any> {
+    let response = new ResponseStandard()
+    let activity = await this.activityModel.findByPk(id)
+    if (!activity) {
+        response.success = false;
+        response.error_code = '404';
+        response.error_message = 'Account Not Found';
+        return response;
+    }
+    await activity.update({ ...updateActivityDto });
+    response.success = true;
+    response.result = { ...updateActivityDto };
+    return response;
+  }
 }
