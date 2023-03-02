@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -57,6 +57,11 @@ export class UsersController {
   @Get('/confirm/:id')
   confirmEmail(@Param() id:number) {
     return this.usersService.confirmEmail(id)
+  }
+
+  @Get('/vreify-email')
+  verifyEmail(@Query('token') token: string) {
+    return this.usersService.verifyEmail(token)
   }
 
   // @Get('activity')

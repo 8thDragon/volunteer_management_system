@@ -2,6 +2,9 @@ import { Exclude } from "class-transformer";
 import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table, HasMany } from "sequelize-typescript";
 import { Activity } from "src/activities/entities/activity.entity";
 import { UserActivity } from "src/user-activities/entities/user-activity.entity";
+import cryptoRandomString from "crypto-random-string";
+
+const nodemailer = require('nodemailer')
 
 export interface userAttributes {
     id?: number;
@@ -19,6 +22,8 @@ export interface userAttributes {
     know_from?: string;
     birthday?: Date;
     non_blacklist?: boolean;
+    emailVerificationToken?: string;
+    emailVerified?: boolean;
     email?: string;
     password?: string;
     activities?: Activity[];
@@ -72,8 +77,11 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Column({ allowNull: false, type: DataType.BOOLEAN(), defaultValue: true})
     non_blacklist?: boolean;
 
-    @Column({ defaultValue: false })
-    confirmed?:boolean;
+    @Column
+    emailVerificationToken?: string;
+
+    @Column
+    emailVerified?: boolean;
 
     @Column({ allowNull: false, type: DataType.STRING(255), unique: true })
     email?: string;
@@ -84,4 +92,28 @@ export class User extends Model<userAttributes, userAttributes> implements userA
 
     @BelongsToMany(() => Activity, () => UserActivity)
     activities?: Activity[];
+
+    generateEmailVerificationToken() {
+        this.emailVerificationToken = cryptoRandomString({ length: 64, type: 'url-safe' });
+    }
+
+    async sendVerificationEmail() {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'ickevinsheriff@gmail.com',
+            pass: 'ceobook1'
+          }
+        });
+    
+        const info = await transporter.sendMail({
+          to: this.email,
+          subject: 'Verify your email address',
+          text: 'Please click the following link to verify your email address:',
+          html: `<p>Please click the following link to verify your email address:</p>
+                <a href="http://localhost8000/verify-email?token=${this.emailVerificationToken}">Verify email address</a>`
+        });
+    
+        console.log(`Verification email sent: ${info.messageId}`);
+    }
 }

@@ -33,9 +33,12 @@ export class UsersService {
     let user = await this.userModel.create({...createUserDto})
     let userTest = JSON.parse(JSON.stringify(user));
     const {password, ...result} = userTest
+    user.generateEmailVerificationToken();
+    await user.save();
+    await user.sendVerificationEmail();
     if (!user) {
       response.error_code = "400"
-      response.error_message = "Create Blog Category Failed"
+      response.error_message = "Create User Failed"
     } else {
       response.success = true
       response.result = user
@@ -162,6 +165,18 @@ export class UsersService {
     return {
       message: 'success'
     }
+  }
+
+  async verifyEmail(token: string) {
+    const user = await this.userModel.findOne({ where: { emailVerificationToken: token } })
+
+    if (!user) {
+      throw new Error('Invalid email verification token');
+    }
+
+    user.emailVerified = true
+    user.emailVerificationToken = null
+    await user.save()
   }
 
   async getTest() {
