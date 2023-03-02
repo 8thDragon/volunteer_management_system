@@ -1,5 +1,6 @@
 export class CreateUserDto {
     name?: string;
+    lastname?: string;
     nickname?: string;
     gender?: string;
     religion?: string;
@@ -8,6 +9,8 @@ export class CreateUserDto {
     workplace?: string;
     congenitalDisease?: string;
     allergicFood?: string;
+    talent?: string;
+    know_from?: string;
     birthday?: Date;
     email?: string;
     password?: string;

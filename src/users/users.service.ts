@@ -169,6 +169,10 @@ export class UsersService {
     // return this.activityModel.findAll({include: [User]})
   }
 
+  async confirmEmail(id:number) {
+    // const userId = redis.get(id)
+  }
+
 
   findOne(id: number) {
     return `This action returns a #${id} user`;

@@ -6,6 +6,7 @@ import { UserActivity } from "src/user-activities/entities/user-activity.entity"
 export interface userAttributes {
     id?: number;
     name?: string;
+    lastname?: string;
     nickname?: string;
     gender?: string;
     religion?: string;
@@ -14,6 +15,8 @@ export interface userAttributes {
     workplace?: string;
     congenitalDisease?: string;
     allergicFood?: string;
+    talent?: string;
+    know_from?: string;
     birthday?: Date;
     non_blacklist?: boolean;
     email?: string;
@@ -31,12 +34,15 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     name?: string;
 
     @Column({ allowNull: false, type: DataType.STRING(255) })
+    lastname?: string;
+
+    @Column({ allowNull: true, type: DataType.STRING(255) })
     nickname?: string;
 
     @Column({ allowNull: false, type: DataType.STRING(255) })
     gender?: string;
 
-    @Column({ allowNull: false, type: DataType.STRING(255) })
+    @Column({ allowNull: true, type: DataType.STRING(255) })
     religion?: string;
 
     @Column({ allowNull: false, type: DataType.STRING(255) })
@@ -48,17 +54,26 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Column({ allowNull: false, type: DataType.STRING(255) })
     workplace?: string;
 
-    @Column({ allowNull: false, type: DataType.STRING(255) })
+    @Column({ allowNull: true, type: DataType.STRING(255) })
     congenitalDisease?: string;
 
-    @Column({ allowNull: false, type: DataType.STRING(255) })
+    @Column({ allowNull: true, type: DataType.STRING(255) })
     allergicFood?: string;
+
+    @Column({ allowNull: true, type: DataType.STRING(255) })
+    talent?: string;
+
+    @Column({ allowNull: true, type: DataType.STRING(255) })
+    know_from?: string;
 
     @Column({ allowNull: false })
     birthday?: Date;
 
     @Column({ allowNull: false, type: DataType.BOOLEAN(), defaultValue: true})
     non_blacklist?: boolean;
+
+    @Column({ defaultValue: false })
+    confirmed?:boolean;
 
     @Column({ allowNull: false, type: DataType.STRING(255), unique: true })
     email?: string;

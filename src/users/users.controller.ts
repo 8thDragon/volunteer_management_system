@@ -54,6 +54,11 @@ export class UsersController {
     return this.usersService.updateUser(updateUserDto, request);
   }
 
+  @Get('/confirm/:id')
+  confirmEmail(@Param() id:number) {
+    return this.usersService.confirmEmail(id)
+  }
+
   // @Get('activity')
   // async activity() {
 
