@@ -3,7 +3,10 @@ import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table, H
 import { Activity } from "src/activities/entities/activity.entity";
 import { UserActivity } from "src/user-activities/entities/user-activity.entity";
 import cryptoRandomString from "crypto-random-string";
+import { v4 as uuidv4 } from 'uuid'
+// import * as nodemailer from 'nodemailer'
 
+// declare function require(name:string);
 const nodemailer = require('nodemailer')
 
 export interface userAttributes {
@@ -77,7 +80,7 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Column({ allowNull: false, type: DataType.BOOLEAN(), defaultValue: true})
     non_blacklist?: boolean;
 
-    @Column
+    @Column({ })
     emailVerificationToken?: string;
 
     @Column
@@ -94,7 +97,7 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     activities?: Activity[];
 
     generateEmailVerificationToken() {
-        this.emailVerificationToken = cryptoRandomString({ length: 64, type: 'url-safe' });
+        this.emailVerificationToken = uuidv4();
     }
 
     async sendVerificationEmail() {
