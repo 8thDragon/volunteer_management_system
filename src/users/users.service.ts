@@ -33,9 +33,9 @@ export class UsersService {
     let user = await this.userModel.create({...createUserDto})
     let userTest = JSON.parse(JSON.stringify(user));
     const {password, ...result} = userTest
-    // user.generateEmailVerificationToken();
-    // await user.save();
-    // await user.sendVerificationEmail();
+    user.generateEmailVerificationToken();
+    await user.save();
+    await user.sendVerificationEmail();
     if (!user) {
       response.error_code = "400"
       response.error_message = "Create User Failed"
