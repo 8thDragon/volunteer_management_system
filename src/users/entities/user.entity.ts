@@ -83,7 +83,7 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Column({ })
     emailVerificationToken?: string;
 
-    @Column
+    @Column({ defaultValue: false })
     emailVerified?: boolean;
 
     @Column({ allowNull: false, type: DataType.STRING(255), unique: true })
@@ -105,16 +105,17 @@ export class User extends Model<userAttributes, userAttributes> implements userA
           service: 'gmail',
           auth: {
             user: 'ickevinsheriff@gmail.com',
-            pass: 'ceobook1'
+            pass: 'bxjanvlgpmquxnar'
           }
         });
     
         const info = await transporter.sendMail({
+          from: 'ickevinsheriff@gmail.com',
           to: this.email,
           subject: 'Verify your email address',
           text: 'Please click the following link to verify your email address:',
           html: `<p>Please click the following link to verify your email address:</p>
-                <a href="http://localhost8000/verify-email?token=${this.emailVerificationToken}">Verify email address</a>`
+                <a href="http://localhost:8000/users/verify-email?token=${this.emailVerificationToken}">Verify email address</a>`
         });
     
         console.log(`Verification email sent: ${info.messageId}`);

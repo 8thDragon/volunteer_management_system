@@ -168,15 +168,18 @@ export class UsersService {
   }
 
   async verifyEmail(token: string) {
+    console.log('test')
     const user = await this.userModel.findOne({ where: { emailVerificationToken: token } })
 
     if (!user) {
-      throw new Error('Invalid email verification token');
+      return { message: 'Invalid verification token' };
     }
 
     user.emailVerified = true
     user.emailVerificationToken = null
     await user.save()
+
+    return { message: 'Email verification successful' };
   }
 
   async getTest() {

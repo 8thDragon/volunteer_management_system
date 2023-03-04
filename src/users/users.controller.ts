@@ -59,7 +59,7 @@ export class UsersController {
     return this.usersService.confirmEmail(id)
   }
 
-  @Get('/vreify-email')
+  @Get('/verify-email')
   verifyEmail(@Query('token') token: string) {
     return this.usersService.verifyEmail(token)
   }
