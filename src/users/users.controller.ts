@@ -16,10 +16,15 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
+  // @Post('login')
+  // async login(@Body() loginUserDTo : LoginUserDto) {
+  //   return this.usersService.getUserByEmail(loginUserDTo)
+  // }
+
   @Post('login')
   async login(@Body() loginUserDTo : LoginUserDto,
               @Res({passthrough: true}) response : Response) {
-    return this.usersService.getUserByEmail(loginUserDTo,response)
+    return this.usersService.loginUser(loginUserDTo, response)
   }
 
   @Post('logout')
@@ -30,6 +35,11 @@ export class UsersController {
   @Get('user')
   async user(@Req() request: Request) {
     return this.usersService.getUser(request)
+  }
+
+  @Get('res')
+  async res(@Res({passthrough: true}) response : Response) {
+    return this.usersService.getRes(response)
   }
 
   @Get('test')
@@ -62,6 +72,11 @@ export class UsersController {
   @Get('/verify-email')
   verifyEmail(@Query('token') token: string) {
     return this.usersService.verifyEmail(token)
+  }
+
+  @Post('/reset-password')
+  resetPassword(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.resetPassword(createUserDto)
   }
 
   // @Get('activity')

@@ -13,6 +13,7 @@ import { Activity } from 'src/activities/entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { CreateActivityDto } from 'src/activities/dto/create-activity.dto';
 import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query } from '@nestjs/common';
 // import { CreateActivityDto } from './dto/create-activity.dto';
 
 @Injectable()
@@ -117,27 +118,30 @@ export class UsersService {
         return response;
   }
 
-  async getUserByEmail(loginUserDTo : LoginUserDto, response : Response): Promise<any> {
+  async loginUser(loginUserDTo : LoginUserDto, response : Response): Promise<any> {
     let responseC = new ResponseStandard()
     let user = await this.userModel.findOne({where: {email: loginUserDTo.email}})
     const jwt = await this.jwtService.signAsync({id: user.id})
     response.cookie('jwt', jwt, {httpOnly: true})
+    // console.log(response)
 
     if (!user) {
+        console.log("!user")
         responseC.error_code = "400"
         responseC.error_message = "Blog Category Not Found"
         throw new BadRequestException('Invalid User')
     } 
-    if (!await bcrypt.compare(loginUserDTo.password, user.password)) {
+    else if (!await bcrypt.compare(loginUserDTo.password, user.password)) {
       responseC.error_code = "400"
       responseC.error_message = "Blog Category Not Found"
       throw new BadRequestException('Password not correct')
     }
     else {
+        console.log('test')
         responseC.success = true
         responseC.result = user
     }
-    return jwt
+    return responseC
   }
 
   async getUser(request: Request) {
@@ -157,6 +161,10 @@ export class UsersService {
     } catch (e) {
       throw new UnauthorizedException()
     }
+  }
+
+  async getRes(response : Response) {
+    return response
   }
 
   async logoutUser(response : Response) {
@@ -180,6 +188,21 @@ export class UsersService {
     await user.save()
 
     return { message: 'Email verification successful' };
+  }
+
+  async resetPassword(createUserDto) {
+    const user = await this.userModel.findOne({ where: { email: createUserDto.email } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    user.generateEmailVerificationToken();
+    await user.save();
+
+    await user.sendVerificationEmail();
+
+    return { message: 'Password reset email sent' };
   }
 
   async getTest() {
