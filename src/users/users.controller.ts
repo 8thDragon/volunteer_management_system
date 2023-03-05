@@ -37,6 +37,11 @@ export class UsersController {
     return this.usersService.getUser(request)
   }
 
+  @Get('activities')
+  async activities() {
+    return this.usersService.getActivities()
+  }
+
   @Get('res')
   async res(@Res({passthrough: true}) response : Response) {
     return this.usersService.getRes(response)

@@ -122,22 +122,19 @@ export class UsersService {
     let responseC = new ResponseStandard()
     let user = await this.userModel.findOne({where: {email: loginUserDTo.email}})
     const jwt = await this.jwtService.signAsync({id: user.id})
-    response.cookie('jwt', jwt, {httpOnly: true})
-    // console.log(response)
+    response.cookie('jwt', jwt, {httpOnly: false })
 
     if (!user) {
-        console.log("!user")
         responseC.error_code = "400"
-        responseC.error_message = "Blog Category Not Found"
+        responseC.error_message = "Invalid User"
         throw new BadRequestException('Invalid User')
     } 
-    else if (!await bcrypt.compare(loginUserDTo.password, user.password)) {
+    if (!await bcrypt.compare(loginUserDTo.password, user.password)) {
       responseC.error_code = "400"
-      responseC.error_message = "Blog Category Not Found"
+      responseC.error_message = "Password not correct"
       throw new BadRequestException('Password not correct')
     }
     else {
-        console.log('test')
         responseC.success = true
         responseC.result = user
     }
@@ -208,6 +205,10 @@ export class UsersService {
   async getTest() {
     return this.userModel.findAll({include: [Activity]})
     // return this.activityModel.findAll({include: [User]})
+  }
+
+  async getActivities() {
+    return this.activityModel.findAll({})
   }
 
   async confirmEmail(id:number) {
