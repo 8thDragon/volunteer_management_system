@@ -93,8 +93,8 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Exclude()
     password?: string;
 
-    @BelongsToMany(() => Activity, () => UserActivity)
-    activities?: Activity[];
+    // @BelongsToMany(() => Activity, () => UserActivity)
+    // activities?: Activity[];
 
     generateEmailVerificationToken() {
         this.emailVerificationToken = uuidv4();

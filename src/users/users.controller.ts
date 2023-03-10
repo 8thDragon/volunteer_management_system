@@ -6,10 +6,17 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { Response, Request } from 'express';
 import { CreateActivityDto } from 'src/activities/dto/create-activity.dto';
 import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
+import { MessageBody, SubscribeMessage } from '@nestjs/websockets/decorators';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @SubscribeMessage('notification')
+  handleNotification(@MessageBody() message: string) {
+    console.log(message);
+    // handle the notification
+  }
 
   @Post('register')
   async register(@Body() createUserDto : CreateUserDto) {
@@ -52,15 +59,21 @@ export class UsersController {
     return this.usersService.getTest()
   }
 
-  @Post('dateAc')
-  async postActivities(@Body() createUserActivityDto : CreateUserActivityDto) {
-    return this.usersService.postUserActivities(createUserActivityDto);
-  }
+  // @Post('dateAc')
+  // async postActivities(@Body() createUserActivityDto : CreateUserActivityDto) {
+  //   return this.usersService.postUserActivities(createUserActivityDto);
+  // }
 
   @Post('dateAc2')
   async postActivities2(@Body() createUserActivityDto : CreateUserActivityDto,
                         @Req() request: Request) {
     return this.usersService.postUserActivities2(createUserActivityDto,request);
+  }
+
+  @Get('update_confirmed_user')
+  async updateConfirmedUser(@Body() createUserActivityDto: CreateUserActivityDto,
+                            @Req() request: Request) {
+    return this.usersService.updateConfirmedUser(createUserActivityDto,request)
   }
 
   @Patch('update_user')

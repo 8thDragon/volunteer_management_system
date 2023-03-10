@@ -9,6 +9,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './users/entities/user.entity';
 import { Activity } from './activities/entities/activity.entity';
 import { UserActivity } from './user-activities/entities/user-activity.entity';
+import { AdminsModule } from './admins/admins.module';
+import { AppGateway } from './users/users.gateway';
+import { TestModule } from './test/test.module';
+import { UserActivitiesConfirmedModule } from './user-activities-confirmed/user-activities-confirmed.module';
 
 @Module({
   imports: [
@@ -44,7 +48,10 @@ import { UserActivity } from './user-activities/entities/user-activity.entity';
   }),
   ActivitiesModule,
   UserActivitiesModule,
+  AdminsModule,
+  TestModule,
+  UserActivitiesConfirmedModule,
 ],
-  providers: [AppService],
+  providers: [AppService,AppGateway],
 })
 export class AppModule {}

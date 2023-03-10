@@ -15,6 +15,7 @@ import { CreateActivityDto } from 'src/activities/dto/create-activity.dto';
 import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query } from '@nestjs/common';
 // import { CreateActivityDto } from './dto/create-activity.dto';
+const { Op } = require("sequelize");
 
 @Injectable()
 export class UsersService {
@@ -47,29 +48,29 @@ export class UsersService {
     return result
   }
   
-  async postUserActivities(createUserActivityDto : CreateUserActivityDto) {
-    let response = new ResponseStandard()
-    let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
-      userId: createUserActivityDto.userId,
-      activityId: createUserActivityDto.activityId,
-      } })
+  // async postUserActivities(createUserActivityDto : CreateUserActivityDto) {
+  //   let response = new ResponseStandard()
+  //   let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
+  //     userId: createUserActivityDto.userId,
+  //     activityId: createUserActivityDto.activityId,
+  //     } })
     
-    console.log(createUserActivityDto.date,typeof createUserActivityDto.date)
-    console.log(userActiv.date,typeof userActiv.date)
-    if (created) {
-      userActiv.update({date: [createUserActivityDto.date]})
-      response.success = true
-      response.result = userActiv
-    } else {
-      if (!(userActiv.date.includes(createUserActivityDto.date))) {
-        let allDate = [...userActiv.date,createUserActivityDto.date]
-        userActiv.update({date: allDate})
-      }
-      response.result = userActiv
-    }
+  //   console.log(createUserActivityDto.date,typeof createUserActivityDto.date)
+  //   console.log(userActiv.date,typeof userActiv.date)
+  //   if (created) {
+  //     userActiv.update({date: [createUserActivityDto.date]})
+  //     response.success = true
+  //     response.result = userActiv
+  //   } else {
+  //     if (!(userActiv.date.includes(createUserActivityDto.date))) {
+  //       let allDate = [...userActiv.date,createUserActivityDto.date]
+  //       userActiv.update({date: allDate})
+  //     }
+  //     response.result = userActiv
+  //   }
 
-    return response
-  }
+  //   return response
+  // }
 
   async postUserActivities2(createUserActivityDto: CreateUserActivityDto,request: Request) {
     let response = new ResponseStandard()
@@ -77,20 +78,22 @@ export class UsersService {
     const data = await this.jwtService.verifyAsync(cookie)
     if (data['id']) {
       let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
-        userId: data['id'],
         activityId: createUserActivityDto.activityId,
+        date: createUserActivityDto.date
         } })
       
-      console.log(createUserActivityDto.date,typeof createUserActivityDto.date)
-      console.log(userActiv.date,typeof userActiv.date)
+      // console.log(createUserActivityDto.date,typeof createUserActivityDto.date)
+      // console.log(userActiv.date,typeof userActiv.date)
       if (created) {
-        userActiv.update({date: [createUserActivityDto.date]})
+        console.log('create')
+        userActiv.update({userId: [data['id']]})
         response.success = true
         response.result = userActiv
       } else {
-        if (!(userActiv.date.includes(createUserActivityDto.date))) {
-          let allDate = [...userActiv.date,createUserActivityDto.date]
-          userActiv.update({date: allDate})
+        console.log('push')
+        if (!(userActiv.userId.includes(data['id']))) {
+          let allUser = [...userActiv.userId,data['id']]
+          userActiv.update({userId: allUser})
         }
         response.result = userActiv
       }
@@ -99,6 +102,19 @@ export class UsersService {
     }
 
     return response
+  }
+  
+  async updateConfirmedUser(createUserActivityDto: CreateUserActivityDto,request: Request) {
+    let response = new ResponseStandard()
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    
+    if (data['id']) {
+      let userActivities = this.userActivityModel.findAll({ where: {
+        userId: {[Op.any]:[parseInt(data['id'])]}
+      }})
+      return userActivities
+    }
   }
 
   async updateUser(updateUserDto: UpdateUserDto, request: Request) {
@@ -203,7 +219,7 @@ export class UsersService {
   }
 
   async getTest() {
-    return this.userModel.findAll({include: [Activity]})
+    return this.activityModel.findAll({include: [UserActivity]})
     // return this.activityModel.findAll({include: [User]})
   }
 

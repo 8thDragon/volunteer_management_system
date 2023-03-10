@@ -1,4 +1,4 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table, BelongsToMany } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table, BelongsToMany, HasMany } from "sequelize-typescript";
 import { UserActivity } from "src/user-activities/entities/user-activity.entity";
 import { User } from "src/users/entities/user.entity";
 
@@ -49,6 +49,13 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
     @Column({ allowNull: false })
     is_open?: boolean;
 
-    @BelongsToMany(() => User, () => UserActivity)
-    users: User[];
+    @HasMany(() => UserActivity, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+    })
+    userActivities?: UserActivity[];
+
+    // @BelongsToMany(() => User, () => UserActivity)
+    // users: User[];
 }
