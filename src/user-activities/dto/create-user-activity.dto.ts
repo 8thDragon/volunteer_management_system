@@ -1,6 +1,6 @@
 export class CreateUserActivityDto {
-    userId?: number[];
-    userIdConfirmed?: number[];
+    userId?: number;
+    userIdConfirmed?: number;
     activityId?: number;
     date?: Date;
 }

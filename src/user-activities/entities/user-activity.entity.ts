@@ -36,4 +36,10 @@ export class UserActivity extends Model<userActivityAttributes, userActivityAttr
 
     @Column({ allowNull: false, type: DataType.DATEONLY})
     date?: Date;
+
+    @Column({ allowNull: false, defaultValue: false })
+    is_started?: boolean;
+
+    @Column({allowNull: false, defaultValue: true })
+    is_ended?: boolean;
 }

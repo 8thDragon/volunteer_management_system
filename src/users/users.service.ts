@@ -14,7 +14,11 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
 import { CreateActivityDto } from 'src/activities/dto/create-activity.dto';
 import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query } from '@nestjs/common';
+import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
+import { DATEONLY } from 'sequelize';
+import { CheckUserDto } from './dto/check-user.dto';
 // import { CreateActivityDto } from './dto/create-activity.dto';
+// import Op from 'sequelize';
 const { Op } = require("sequelize");
 
 @Injectable()
@@ -72,7 +76,7 @@ export class UsersService {
   //   return response
   // }
 
-  async postUserActivities2(createUserActivityDto: CreateUserActivityDto,request: Request) {
+  async postUserActivities2(createUserActivityDto: CreateUserActivityDto,checkUserDto : CheckUserDto,request: Request) {
     let response = new ResponseStandard()
     const cookie = request.cookies['jwt']
     const data = await this.jwtService.verifyAsync(cookie)
@@ -80,22 +84,26 @@ export class UsersService {
       let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
         activityId: createUserActivityDto.activityId,
         date: createUserActivityDto.date
-        } })
-      
-      // console.log(createUserActivityDto.date,typeof createUserActivityDto.date)
-      // console.log(userActiv.date,typeof userActiv.date)
-      if (created) {
-        console.log('create')
-        userActiv.update({userId: [data['id']]})
-        response.success = true
-        response.result = userActiv
-      } else {
-        console.log('push')
-        if (!(userActiv.userId.includes(data['id']))) {
-          let allUser = [...userActiv.userId,data['id']]
-          userActiv.update({userId: allUser})
+        }})
+      let user = await this.userModel.findOne({where: {
+        id: data['id']
+      }})
+      if (user.non_blacklist == true) {
+        if (created) {
+          console.log('create')
+          userActiv.update({userId: [data['id']]})
+          response.success = true
+          response.result = userActiv
+        } else {
+          console.log('push')
+          if (!(userActiv.userId.includes(data['id']))) {
+            let allUser = [...userActiv.userId,data['id']]
+            userActiv.update({userId: allUser})
+          }
+          response.result = userActiv
         }
-        response.result = userActiv
+      } else {
+        throw new BadRequestException('black list')
       }
     } else {
       throw new BadRequestException('You are not loging in!!!')
@@ -103,17 +111,71 @@ export class UsersService {
 
     return response
   }
+
+  async updateConfirmedId(createUserActivityDto: CreateUserActivityDto,updateUserActivityDto: UpdateUserActivityDto, request: Request):Promise<any> {
+    let response = new ResponseStandard()
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    if (data['id']) {
+      let userActiv = await this.userActivityModel.findOne({ where: {
+        userId: {[Op.contains]:[data['id']],},
+        date: createUserActivityDto.date,
+        activityId: createUserActivityDto.activityId
+      }})
+      let ucID = [...userActiv.userIdConfirmed,data['id']]
+      let new_uID = userActiv.userId.filter((new_id) => new_id !== data['id'])
+      await userActiv.update({userId: new_uID,userIdConfirmed: ucID})
+      return userActiv.userId.filter((new_id) => new_id !== data['id'])
+    }
+  }
+
+  async cancelActivity(createUserActivityDto: CreateUserActivityDto,updateUserActivityDto: UpdateUserActivityDto, request: Request):Promise<any> {
+    let response = new ResponseStandard()
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    if (data['id']) {
+      console.log('test')
+      let userActiv = await this.userActivityModel.findOne({ where: {
+        userId: {[Op.contains]:[data['id']],},
+        date: createUserActivityDto.date,
+        activityId: createUserActivityDto.activityId
+      }})
+      if(userActiv) {
+        console.log('test2')
+        let date_now = new Date()
+        let act_date = userActiv.date
+        let act_date_gen = new Date(act_date)
+        act_date_gen.setDate(act_date_gen.getDate() - 1)
+        let date_check = date_now.getDate() < act_date_gen.getDate()
+        if (userActiv && !userActiv.is_started && (date_check)) {
+          let new_uID = userActiv.userId.filter((new_id) => new_id !== data['id'])
+          await userActiv.update({userId: new_uID})
+        } else {
+          throw new BadRequestException('You can not cancle This activity.')
+        }
+        return date_now.getDate() < act_date_gen.getDate()
+      } else {
+        throw new BadRequestException('You are not registered to this activity.')
+      }
+    }
+  }
   
-  async updateConfirmedUser(createUserActivityDto: CreateUserActivityDto,request: Request) {
+  async GetDataArray(createUserActivityDto: CreateUserActivityDto,request: Request) {
     let response = new ResponseStandard()
     const cookie = request.cookies['jwt']
     const data = await this.jwtService.verifyAsync(cookie)
     
     if (data['id']) {
       let userActivities = this.userActivityModel.findAll({ where: {
-        userId: {[Op.any]:[parseInt(data['id'])]}
-      }})
-      return userActivities
+        userId: {[Op.contains]:[data['id']],}
+      },
+      raw: true})
+      let test = (await userActivities).map(r => {return r.userId})
+      let test2 = test[0].indexOf(data['id'])
+      let test3 = test[0].splice(test2,1)
+      return test3
+      // return (await userActivities).map(r => {return r.userId})
+      // return userActivities
     }
   }
 
@@ -122,16 +184,16 @@ export class UsersService {
     const cookie = request.cookies['jwt']
     const data = await this.jwtService.verifyAsync(cookie)
     let user = await this.userModel.findByPk(data['id'])
-        if (!user) {
-            response.success = false;
-            response.error_code = '404';
-            response.error_message = 'Account Not Found';
-            return response;
-        }
-        await user.update({ ...updateUserDto });
-        response.success = true;
-        response.result = { ...updateUserDto };
+    if (!user) {
+        response.success = false;
+        response.error_code = '404';
+        response.error_message = 'Account Not Found';
         return response;
+    }
+    await user.update({ ...updateUserDto });
+    response.success = true;
+    response.result = { ...updateUserDto };
+    return response;
   }
 
   async loginUser(loginUserDTo : LoginUserDto, response : Response): Promise<any> {
@@ -158,22 +220,18 @@ export class UsersService {
   }
 
   async getUser(request: Request) {
-    try {
-      const cookie = request.cookies['jwt']
-      const data = await this.jwtService.verifyAsync(cookie)
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
 
-      if(!data) {
-        throw new UnauthorizedException('Dont have data')
-      }
-      const user = await this.userModel.findOne({where: {id: data['id']}})
-
-      let userTest = JSON.parse(JSON.stringify(user));
-      const {password, ...result} = userTest
-
-      return result
-    } catch (e) {
-      throw new UnauthorizedException()
+    if(!data) {
+      throw new UnauthorizedException('Dont have data')
     }
+    const user = await this.userModel.findOne({where: {id: data['id']}})
+
+    let userTest = JSON.parse(JSON.stringify(user));
+    const {password, ...result} = userTest
+
+    return result
   }
 
   async getRes(response : Response) {

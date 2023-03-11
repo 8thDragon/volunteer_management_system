@@ -7,6 +7,8 @@ import { Response, Request } from 'express';
 import { CreateActivityDto } from 'src/activities/dto/create-activity.dto';
 import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
 import { MessageBody, SubscribeMessage } from '@nestjs/websockets/decorators';
+import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
+import { CheckUserDto } from './dto/check-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -66,14 +68,29 @@ export class UsersController {
 
   @Post('dateAc2')
   async postActivities2(@Body() createUserActivityDto : CreateUserActivityDto,
+                        @Body() checkUserDto : CheckUserDto,
                         @Req() request: Request) {
-    return this.usersService.postUserActivities2(createUserActivityDto,request);
+    return this.usersService.postUserActivities2(createUserActivityDto,checkUserDto,request);
   }
 
-  @Get('update_confirmed_user')
-  async updateConfirmedUser(@Body() createUserActivityDto: CreateUserActivityDto,
-                            @Req() request: Request) {
-    return this.usersService.updateConfirmedUser(createUserActivityDto,request)
+  @Get('get_data_array')
+  async GetDataArray(@Body() createUserActivityDto: CreateUserActivityDto,
+                    @Req() request: Request) {
+    return this.usersService.GetDataArray(createUserActivityDto,request)
+  }
+
+  @Patch('update_confirmed_id')
+  async updateConfirmedId(@Body() createUserActivityDto: CreateUserActivityDto,
+                          @Body() updateUserActivityDto: UpdateUserActivityDto,
+                          @Req() request: Request) {
+    return this.usersService.updateConfirmedId(createUserActivityDto, updateUserActivityDto, request)                    
+  }
+
+  @Patch('cancel_activity')
+  async cancelActivity(@Body() createUserActivityDto: CreateUserActivityDto,
+                          @Body() updateUserActivityDto: UpdateUserActivityDto,
+                          @Req() request: Request) {
+    return this.usersService.cancelActivity(createUserActivityDto, updateUserActivityDto, request)                    
   }
 
   @Patch('update_user')

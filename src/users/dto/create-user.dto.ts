@@ -14,4 +14,5 @@ export class CreateUserDto {
     birthday?: Date;
     email?: string;
     password?: string;
+    non_blacklist?: boolean;
 }

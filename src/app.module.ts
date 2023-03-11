@@ -13,6 +13,7 @@ import { AdminsModule } from './admins/admins.module';
 import { AppGateway } from './users/users.gateway';
 import { TestModule } from './test/test.module';
 import { UserActivitiesConfirmedModule } from './user-activities-confirmed/user-activities-confirmed.module';
+import { Admin } from './admins/entities/admin.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UserActivitiesConfirmedModule } from './user-activities-confirmed/user-
         models: [
           User, 
           Activity,
+          Admin,
           UserActivity
         ],
       }),
@@ -40,6 +42,7 @@ import { UserActivitiesConfirmedModule } from './user-activities-confirmed/user-
     SequelizeModule.forFeature([
       User, 
       Activity,
+      Admin,
       UserActivity
     ]),
   UsersModule,
