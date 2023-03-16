@@ -7,6 +7,8 @@ import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt/dist';
 import { Activity } from 'src/activities/entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
+import { MulterModule } from '@nestjs/platform-express';
+import { PdfFile } from 'src/activities/entities/pdfFile.entity';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
         models: [
           User, 
           Activity,
+          PdfFile,
           UserActivity
         ],
       }),
@@ -34,12 +37,16 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
     SequelizeModule.forFeature([
       User, 
       Activity,
+      PdfFile,
       UserActivity
     ]),
     JwtModule.register({
       secret: 'secret',
       signOptions: {expiresIn: '1w'}
-    })
+    }),
+    MulterModule.register({
+      dest: './uploads',
+    }),
   ],
   controllers: [UsersController],
   providers: [UsersService, ConfigService]

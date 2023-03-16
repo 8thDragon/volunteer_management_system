@@ -14,6 +14,8 @@ import { AppGateway } from './users/users.gateway';
 import { TestModule } from './test/test.module';
 import { UserActivitiesConfirmedModule } from './user-activities-confirmed/user-activities-confirmed.module';
 import { Admin } from './admins/entities/admin.entity';
+import { PdfFile } from './activities/entities/pdfFile.entity';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { Admin } from './admins/entities/admin.entity';
           User, 
           Activity,
           Admin,
+          PdfFile,
           UserActivity
         ],
       }),
@@ -43,11 +46,15 @@ import { Admin } from './admins/entities/admin.entity';
       User, 
       Activity,
       Admin,
-      UserActivity
+      UserActivity,
+      PdfFile
     ]),
   UsersModule,
   ConfigModule.forRoot({
     isGlobal: true,
+  }),
+  MulterModule.register({
+    dest: './uploads',
   }),
   ActivitiesModule,
   UserActivitiesModule,

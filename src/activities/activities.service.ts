@@ -4,12 +4,22 @@ import { UpdateActivityDto } from './dto/update-activity.dto';
 import { Activity } from './entities/activity.entity';
 import { ResponseStandard } from 'utilities/responseStandardApi';
 import { InjectModel } from '@nestjs/sequelize';
+import { PdfFile } from './entities/pdfFile.entity';
+import { User } from 'src/users/entities/user.entity';
+import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
+import { PdfFileDto } from './dto/pdf-file.dto';
 
 @Injectable()
 export class ActivitiesService {
   constructor(
+    @InjectModel(User)
+    private userModel: typeof User,
     @InjectModel(Activity)
     private activityModel: typeof Activity,
+    @InjectModel(UserActivity)
+    private userActivityModel: typeof UserActivity,
+    @InjectModel(PdfFile)
+    private pdfFileModel: typeof PdfFile,
 ) {}
   async createActivity(createActivityDto : CreateActivityDto) {
     let response = new ResponseStandard()
@@ -37,5 +47,22 @@ export class ActivitiesService {
     response.success = true;
     response.result = { ...updateActivityDto };
     return response;
+  }
+
+  async uploadPdf(data: Buffer): Promise<any> {
+    console.log(data)
+    let response = new ResponseStandard()
+    // const pdf = new PdfFile()
+    // pdf.activityId = 1
+    // pdf.pdfFile = data
+    // await pdf.save()
+    // return pdf
+    // if (!(await this.activityModel.findByPk(pdfFileDto.activityId))) {
+    //   response.error_code = "400"
+    //   response.error_message = "Blog Category Not Found"
+    // } else {
+      let pdf = await this.pdfFileModel.create({activityId: 1, pdfFile: data})
+    // }
+    return response
   }
 }

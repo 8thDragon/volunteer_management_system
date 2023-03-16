@@ -6,6 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from 'src/users/entities/user.entity';
 import { Activity } from './entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
+import { PdfFile } from './entities/pdfFile.entity';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
         models: [
           User, 
           Activity,
+          PdfFile,
           UserActivity
         ],
       }),
@@ -33,8 +36,12 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
     SequelizeModule.forFeature([
       User, 
       Activity,
+      PdfFile,
       UserActivity
     ]),
+    MulterModule.register({
+      dest: './uploads',
+    }),
   ],
   controllers: [ActivitiesController],
   providers: [ActivitiesService]

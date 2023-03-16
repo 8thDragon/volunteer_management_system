@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query, Sse } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,6 +9,11 @@ import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activ
 import { MessageBody, SubscribeMessage } from '@nestjs/websockets/decorators';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 import { CheckUserDto } from './dto/check-user.dto';
+import { interval, map, Observable, of } from 'rxjs';
+
+interface MessageEvent {
+  data: string | object
+}
 
 @Controller('users')
 export class UsersController {
@@ -113,6 +118,20 @@ export class UsersController {
   resetPassword(@Body() createUserDto: CreateUserDto) {
     return this.usersService.resetPassword(createUserDto)
   }
+
+  @Sse('/event')
+  sendEvent(): Observable<MessageEvent> {
+    return interval(1000).pipe(map((num: number) => ({
+      data: 'hello ' + num
+    })))
+  }
+
+  @Sse('/event2')
+  sendEvent2() {
+    return of({ data: 'Hello World!' });
+  }
+
+  
 
   // @Get('activity')
   // async activity() {
