@@ -38,4 +38,9 @@ export class ActivitiesController {
   async uploadFile(@UploadedFile() file) {
     console.log(file)
   }
+
+  @Get(':id')
+  getOneActivity(@Param('id') id: string) {
+    return this.activitiesService.getOneActivity(+id);
+  }
 }

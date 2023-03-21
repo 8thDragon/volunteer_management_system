@@ -8,6 +8,7 @@ export interface userActivityAttributes {
     activityId?: number;
     activities: Activity;
     date?: Date;
+    canceled?: boolean;
 }
 
 @Table({ tableName: "user_activities", timestamps: true })
@@ -42,4 +43,7 @@ export class UserActivity extends Model<userActivityAttributes, userActivityAttr
 
     @Column({allowNull: false, defaultValue: true })
     is_ended?: boolean;
+
+    @Column({allowNull: false, defaultValue: false })
+    canceled?: boolean;
 }

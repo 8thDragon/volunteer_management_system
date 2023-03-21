@@ -27,7 +27,6 @@ export interface userAttributes {
     non_blacklist?: boolean;
     emailVerificationToken?: string;
     emailVerified?: boolean;
-    subscription?: PushSubscription;
     email?: string;
     password?: string;
     activities?: Activity[];
@@ -86,9 +85,6 @@ export class User extends Model<userAttributes, userAttributes> implements userA
 
     @Column({ defaultValue: false })
     emailVerified?: boolean;
-
-    @Column({ allowNull: true })
-    subscription?: PushSubscription;
 
     @Column({ allowNull: false, type: DataType.STRING(255), unique: true })
     email?: string;

@@ -65,4 +65,17 @@ export class ActivitiesService {
     // }
     return response
   }
+
+  async getOneActivity(id) {
+    let response = new ResponseStandard()
+        let activ = await this.activityModel.findByPk(id)
+        if (!activ) {
+            response.error_code = "400"
+            response.error_message = "Activity Not Found"
+        } else {
+            response.success = true
+            response.result = activ
+        }
+        return response
+  }
 }

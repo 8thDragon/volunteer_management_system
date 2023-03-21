@@ -16,6 +16,9 @@ import { UserActivitiesConfirmedModule } from './user-activities-confirmed/user-
 import { Admin } from './admins/entities/admin.entity';
 import { PdfFile } from './activities/entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
+// import { GatewayModule } from './user-activity/user-activity.module';
+// import { UserActivityGateway } from './user-activity/user-activity.gateway';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -61,7 +64,10 @@ import { MulterModule } from '@nestjs/platform-express';
   AdminsModule,
   TestModule,
   UserActivitiesConfirmedModule,
+  SocketModule
 ],
-  providers: [AppService,AppGateway],
+  providers: [AppService,AppGateway, 
+    SocketModule
+  ],
 })
 export class AppModule {}

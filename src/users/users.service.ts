@@ -17,12 +17,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query } fr
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 import { DATEONLY } from 'sequelize';
 import { CheckUserDto } from './dto/check-user.dto';
+import * as webpush from 'web-push';
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
 const { Op } = require("sequelize");
 
 @Injectable()
 export class UsersService {
+  vapidKeys = webpush.generateVAPIDKeys();
+  private readonly publicKey = this.vapidKeys.publicKey;
+  private readonly privateKey = this.vapidKeys.privateKey;
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
@@ -31,7 +35,29 @@ export class UsersService {
     private activityModel: typeof Activity,
     @InjectModel(UserActivity)
     private userActivityModel: typeof UserActivity,
-) {}
+    
+) {
+  // webpush.setVapidDetails(
+  //   'http://localhost:8000',
+  //   this.publicKey,
+  //   this.privateKey,
+  // );
+}
+  // async sendEventNotification(user: User, userActivity: UserActivity) {
+  //   const payload = {
+  //     title: `Reminder: Event tomorrow`,
+  //     body: `Don't forget that you have an event tomorrow.`,
+  //     icon: 'https://example.com/icon.png',
+  //   };
+
+  //   try {
+  //     await webpush.sendNotification(user.subscription, JSON.stringify(payload));
+  //   } catch (error) {
+  //     console.error('Failed to send push notification:', error);
+  //   }
+  // }
+
+
   async createUser(createUserDto : CreateUserDto) {
     let response = new ResponseStandard()
     const passwordHash = await bcrypt.hash(createUserDto.password,12);

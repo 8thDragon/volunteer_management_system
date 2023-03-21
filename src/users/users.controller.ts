@@ -10,6 +10,8 @@ import { MessageBody, SubscribeMessage } from '@nestjs/websockets/decorators';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 import { CheckUserDto } from './dto/check-user.dto';
 import { interval, map, Observable, of } from 'rxjs';
+import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 
 interface MessageEvent {
   data: string | object
@@ -17,7 +19,7 @@ interface MessageEvent {
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService,) {}
 
   @SubscribeMessage('notification')
   handleNotification(@MessageBody() message: string) {
@@ -131,7 +133,8 @@ export class UsersController {
     return of({ data: 'Hello World!' });
   }
 
-  
+
+
 
   // @Get('activity')
   // async activity() {
