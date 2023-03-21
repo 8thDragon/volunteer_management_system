@@ -6,16 +6,13 @@ import { InjectModel } from '@nestjs/sequelize';
 import { ResponseStandard } from 'utilities/responseStandardApi';
 import * as bcrypt from 'bcrypt'
 import { LoginUserDto } from './dto/login-user.dto';
-import { where } from 'sequelize';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 import { Activity } from 'src/activities/entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { CreateActivityDto } from 'src/activities/dto/create-activity.dto';
 import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query } from '@nestjs/common';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
-import { DATEONLY } from 'sequelize';
 import { CheckUserDto } from './dto/check-user.dto';
 import * as webpush from 'web-push';
 // import { CreateActivityDto } from './dto/create-activity.dto';

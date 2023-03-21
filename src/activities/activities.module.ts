@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from 'src/users/entities/user.entity';
 import { Activity } from './entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
-import { PdfFile } from './entities/pdfFile.entity';
+// import { PdfFile } from './entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
@@ -26,7 +26,7 @@ import { MulterModule } from '@nestjs/platform-express';
         models: [
           User, 
           Activity,
-          PdfFile,
+          // PdfFile,
           UserActivity
         ],
       }),
@@ -36,7 +36,7 @@ import { MulterModule } from '@nestjs/platform-express';
     SequelizeModule.forFeature([
       User, 
       Activity,
-      PdfFile,
+      // PdfFile,
       UserActivity
     ]),
     MulterModule.register({

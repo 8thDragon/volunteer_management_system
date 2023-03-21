@@ -35,7 +35,7 @@ export class UserActivity extends Model<userActivityAttributes, userActivityAttr
     })
     activities: Activity;
 
-    @Column({ allowNull: false, type: DataType.DATEONLY})
+    @Column({ allowNull: false, type: DataType.DATE})
     date?: Date;
 
     @Column({ allowNull: false, defaultValue: false })

@@ -14,11 +14,12 @@ import { AppGateway } from './users/users.gateway';
 import { TestModule } from './test/test.module';
 import { UserActivitiesConfirmedModule } from './user-activities-confirmed/user-activities-confirmed.module';
 import { Admin } from './admins/entities/admin.entity';
-import { PdfFile } from './activities/entities/pdfFile.entity';
+// import { PdfFile } from './activities/entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
 // import { GatewayModule } from './user-activity/user-activity.module';
 // import { UserActivityGateway } from './user-activity/user-activity.gateway';
-import { SocketModule } from './socket/socket.module';
+// import { SocketModule } from './socket/socket.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -38,11 +39,15 @@ import { SocketModule } from './socket/socket.module';
           User, 
           Activity,
           Admin,
-          PdfFile,
+          // PdfFile,
           UserActivity
         ],
       }),
       inject: [ConfigService],
+    }),
+    JwtModule.register({
+      secret: 'secret',
+      signOptions: {expiresIn: '1w'}
     }),
     
     SequelizeModule.forFeature([
@@ -50,7 +55,7 @@ import { SocketModule } from './socket/socket.module';
       Activity,
       Admin,
       UserActivity,
-      PdfFile
+      // PdfFile
     ]),
   UsersModule,
   ConfigModule.forRoot({
@@ -64,10 +69,10 @@ import { SocketModule } from './socket/socket.module';
   AdminsModule,
   TestModule,
   UserActivitiesConfirmedModule,
-  SocketModule
+  // SocketModule
 ],
   providers: [AppService,AppGateway, 
-    SocketModule
+    // SocketModule
   ],
 })
 export class AppModule {}

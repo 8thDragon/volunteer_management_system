@@ -4,7 +4,7 @@ import { UpdateActivityDto } from './dto/update-activity.dto';
 import { Activity } from './entities/activity.entity';
 import { ResponseStandard } from 'utilities/responseStandardApi';
 import { InjectModel } from '@nestjs/sequelize';
-import { PdfFile } from './entities/pdfFile.entity';
+// import { PdfFile } from './entities/pdfFile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { PdfFileDto } from './dto/pdf-file.dto';
@@ -18,8 +18,8 @@ export class ActivitiesService {
     private activityModel: typeof Activity,
     @InjectModel(UserActivity)
     private userActivityModel: typeof UserActivity,
-    @InjectModel(PdfFile)
-    private pdfFileModel: typeof PdfFile,
+    // @InjectModel(PdfFile)
+    // private pdfFileModel: typeof PdfFile,
 ) {}
   async createActivity(createActivityDto : CreateActivityDto) {
     let response = new ResponseStandard()
@@ -61,7 +61,7 @@ export class ActivitiesService {
     //   response.error_code = "400"
     //   response.error_message = "Blog Category Not Found"
     // } else {
-      let pdf = await this.pdfFileModel.create({activityId: 1, pdfFile: data})
+      // let pdf = await this.pdfFileModel.create({activityId: 1, pdfFile: data})
     // }
     return response
   }

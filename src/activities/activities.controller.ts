@@ -5,9 +5,12 @@ import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { Response, Request, Express } from 'express';
 // const multer = require('multer')
-import { Multer } from 'multer';
+import { diskStorage, Multer } from 'multer';
 import { PdfFileDto } from './dto/pdf-file.dto';
-import { PdfFile } from './entities/pdfFile.entity';
+import { ApiConsumes } from '@nestjs/swagger';
+import { UploadFileDto } from './dto/upload.dto';
+import { editFileName } from 'utilities/editFileName';
+// import { PdfFile } from './entities/pdfFile.entity';
 
 @Controller('activities')
 export class ActivitiesController {
@@ -33,14 +36,40 @@ export class ActivitiesController {
     return { id: pdf.id };
   }
 
-  @Post('uploads')
-  @UseInterceptors(FileInterceptor('pdfFile'))
-  async uploadFile(@UploadedFile() file) {
-    console.log(file)
-  }
+  // @Post('uploads')
+  // @UseInterceptors(FileInterceptor('pdfFile'))
+  // async uploadFile(@UploadedFile() file) {
+  //   console.log(file)
+  // }
 
   @Get(':id')
   getOneActivity(@Param('id') id: string) {
     return this.activitiesService.getOneActivity(+id);
+  }
+
+  @Post('fileupload')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('fileName', {
+      storage: diskStorage({
+        destination: './uploadedFiles/files',
+        filename: editFileName,
+      }),
+    }),
+  )
+  async uploadFile(
+    @Body() uploadFile: UploadFileDto,
+    @UploadedFile() fileName: Express.Multer.File,
+  ): Promise<any> {
+    let response = {
+      // user_id: uploadFile.user_id,
+      // file_field: uploadFile.file_field,
+      // file_name: fileName.filename,
+      // file_path: fileName.path,
+      // file: fileName,
+    }
+    console.log('res')
+    return response
+    // return this.accountService.uploadPathFileToAccount(response)
   }
 }

@@ -8,7 +8,7 @@ import { Activity } from 'src/activities/entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Admin } from './entities/admin.entity';
-import { PdfFile } from 'src/activities/entities/pdfFile.entity';
+// import { PdfFile } from 'src/activities/entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
@@ -30,7 +30,7 @@ import { MulterModule } from '@nestjs/platform-express';
           Activity,
           Admin,
           UserActivity,
-          PdfFile
+          // PdfFile
         ],
       }),
       inject: [ConfigService],
@@ -41,7 +41,7 @@ import { MulterModule } from '@nestjs/platform-express';
       Activity,
       Admin,
       UserActivity,
-      PdfFile
+      // PdfFile
     ]),
     JwtModule.register({
       secret: 'secret',

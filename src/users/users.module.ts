@@ -8,7 +8,7 @@ import { JwtModule } from '@nestjs/jwt/dist';
 import { Activity } from 'src/activities/entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { MulterModule } from '@nestjs/platform-express';
-import { PdfFile } from 'src/activities/entities/pdfFile.entity';
+// import { PdfFile } from 'src/activities/entities/pdfFile.entity';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { PdfFile } from 'src/activities/entities/pdfFile.entity';
         models: [
           User, 
           Activity,
-          PdfFile,
+          // PdfFile,
           UserActivity
         ],
       }),
@@ -37,7 +37,7 @@ import { PdfFile } from 'src/activities/entities/pdfFile.entity';
     SequelizeModule.forFeature([
       User, 
       Activity,
-      PdfFile,
+      // PdfFile,
       UserActivity
     ]),
     JwtModule.register({
