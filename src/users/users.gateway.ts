@@ -1,22 +1,31 @@
-import { OnGatewayInit, WebSocketGateway } from '@nestjs/websockets';
+import { InjectModel } from '@nestjs/sequelize';
+import { OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 
 @WebSocketGateway()
-export class AppGateway implements OnGatewayInit {
-  private readonly server: Server;
+export class AppGateway {
+  @WebSocketServer() server: Server;
 
-  constructor() {
+  constructor(@InjectModel(UserActivity) private userActivity: typeof UserActivity) {
     this.server = new Server();
   }
 
-  afterInit(server: Server) {
-    setInterval(() => {
-      // check the time and emit a notification to the connected clients
-      const currentTime = new Date();
-      const notificationTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day from now
-      if (currentTime >= notificationTime) {
-        this.server.emit('notification', 'You will be notified before 1 day.');
-      }
-    }, 1000);
+  @SubscribeMessage('events')
+  async handleEventNotification(client: any, data: any): Promise<void> {
+    const events = await this.userActivity.findAll({
+      where: {
+        date: {
+          $gte: new Date(),
+          $lt: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+        },
+        canceled: false,
+      },
+    });
+
+    for (const event of events) {
+      client.emit('event', event.toJSON());
+    }
   }
 }
