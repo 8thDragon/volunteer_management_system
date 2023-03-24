@@ -20,6 +20,7 @@ import { MulterModule } from '@nestjs/platform-express';
 // import { UserActivityGateway } from './user-activity/user-activity.gateway';
 // import { SocketModule } from './socket/socket.module';
 import { JwtModule } from '@nestjs/jwt';
+import { File } from './activities/entities/file.entity';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { JwtModule } from '@nestjs/jwt';
           Activity,
           Admin,
           // PdfFile,
-          UserActivity
+          UserActivity,
+          File,
         ],
       }),
       inject: [ConfigService],
@@ -55,6 +57,7 @@ import { JwtModule } from '@nestjs/jwt';
       Activity,
       Admin,
       UserActivity,
+      File,
       // PdfFile
     ]),
   UsersModule,

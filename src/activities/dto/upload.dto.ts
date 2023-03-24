@@ -3,12 +3,11 @@ import { ApiProperty } from "@nestjs/swagger";
 export class UploadFileDto {
 
     @ApiProperty({ type: 'string', format: 'binary', required: true })
-    fileName: string;
+    file_name?: string;
 
     @ApiProperty()
-    user_id?: number;
+    file_path?: string;
 
     @ApiProperty()
-    file_field?: string;
-
+    activityId?: number;
 }

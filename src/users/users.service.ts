@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -15,12 +15,20 @@ import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activ
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 import { CheckUserDto } from './dto/check-user.dto';
 import * as webpush from 'web-push';
+import { WebSocketGateway } from '@nestjs/websockets/decorators/socket-gateway.decorator';
+import { WebSocketServer } from '@nestjs/websockets/decorators/gateway-server.decorator';
+import { SubscribeMessage } from '@nestjs/websockets/decorators/subscribe-message.decorator';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query, Sse, ExecutionContext } from '@nestjs/common';
+import { Server, Socket } from 'socket.io';
+import { ConnectedSocket } from '@nestjs/websockets';
+import { REQUEST } from '@nestjs/core';
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
 const { Op } = require("sequelize");
-
+@WebSocketGateway()
 @Injectable()
 export class UsersService {
+  @WebSocketServer() server: Server;
   vapidKeys = webpush.generateVAPIDKeys();
   private readonly publicKey = this.vapidKeys.publicKey;
   private readonly privateKey = this.vapidKeys.privateKey;
@@ -32,14 +40,11 @@ export class UsersService {
     private activityModel: typeof Activity,
     @InjectModel(UserActivity)
     private userActivityModel: typeof UserActivity,
+    @InjectModel(UserActivity) 
+    private userActivity: typeof UserActivity,
+    @Inject('REQUEST') private readonly request: Request,
     
-) {
-  // webpush.setVapidDetails(
-  //   'http://localhost:8000',
-  //   this.publicKey,
-  //   this.privateKey,
-  // );
-}
+) {}
   // async sendEventNotification(user: User, userActivity: UserActivity) {
   //   const payload = {
   //     title: `Reminder: Event tomorrow`,
@@ -244,6 +249,7 @@ export class UsersService {
 
   async getUser(request: Request) {
     const cookie = request.cookies['jwt']
+    console.log(cookie)
     const data = await this.jwtService.verifyAsync(cookie)
 
     if(!data) {
@@ -324,4 +330,47 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
+  private getTokenFromRequest(request: any): string | null {
+    const authHeader = request.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      return authHeader.substring(7);
+    }
+    return null;
+  }
+
+  @SubscribeMessage('events')
+  async handleEventNotification(client: any, request: Request) {
+    console.log('test')
+    // const request = context.switchToHttp().getRequest();
+    const cookie = request.cookies['jwt']
+    // const cookie = this.request.cookies['jwt']
+    console.log(cookie)
+    if(cookie) {
+      console.log('test')
+      const dataUser = await this.jwtService.verifyAsync(cookie)
+      if (dataUser['id']) {
+        const events = await this.userActivity.findAll({
+          where: {
+            userId: {[Op.contains]:[dataUser['id']],},
+            date: {
+              [Op.gte]: new Date(),
+              [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+            },
+            canceled: false,
+          },
+        });
+        let test1 = new Date()
+        let test = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+        console.log(test1)
+        console.log(test)
+      
+
+        for (const event of events) {
+          client.emit('event', event.toJSON());
+        }
+      }
+    }
+  }
+
 }

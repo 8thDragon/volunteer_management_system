@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Res, StreamableFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
@@ -10,11 +10,18 @@ import { PdfFileDto } from './dto/pdf-file.dto';
 import { ApiConsumes } from '@nestjs/swagger';
 import { UploadFileDto } from './dto/upload.dto';
 import { editFileName } from 'utilities/editFileName';
+import { File } from './entities/file.entity';
+import { InjectModel } from '@nestjs/sequelize';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 // import { PdfFile } from './entities/pdfFile.entity';
 
 @Controller('activities')
 export class ActivitiesController {
-  constructor(private readonly activitiesService: ActivitiesService) {}
+  constructor(private readonly activitiesService: ActivitiesService,
+              @InjectModel(File) 
+              private fileUpload: typeof File,
+              ) {}
 
   @Post('createActivity')
   async createActivity(@Body() createActivityDto : CreateActivityDto) {
@@ -42,10 +49,10 @@ export class ActivitiesController {
   //   console.log(file)
   // }
 
-  @Get(':id')
-  getOneActivity(@Param('id') id: string) {
-    return this.activitiesService.getOneActivity(+id);
-  }
+  // @Get(':id')
+  // getOneActivity(@Param('id') id: string) {
+  //   return this.activitiesService.getOneActivity(+id);
+  // }
 
   @Post('fileupload')
   @ApiConsumes('multipart/form-data')
@@ -61,15 +68,25 @@ export class ActivitiesController {
     @Body() uploadFile: UploadFileDto,
     @UploadedFile() fileName: Express.Multer.File,
   ): Promise<any> {
-    let response = {
-      // user_id: uploadFile.user_id,
-      // file_field: uploadFile.file_field,
-      // file_name: fileName.filename,
-      // file_path: fileName.path,
-      // file: fileName,
+    let fileData = {
+      activityId: uploadFile.activityId,
+      file_name: fileName.filename,
+      file_path: fileName.path,
     }
     console.log('res')
-    return response
+    let saveFile = this.fileUpload.create(fileData)
+    return saveFile
     // return this.accountService.uploadPathFileToAccount(response)
+  }
+
+  @Get('getFileTest')
+  async getFile(@Res() res: Response) {
+    let fileUp = await this.fileUpload.findByPk(2)
+    const file = createReadStream(join(process.cwd(),fileUp.file_path));
+    file.pipe(res);
+    res.set({
+      // 'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="${fileUp.file_name}"`,
+    });
   }
 }

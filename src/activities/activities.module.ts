@@ -8,6 +8,7 @@ import { Activity } from './entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 // import { PdfFile } from './entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
+import { File } from './entities/file.entity';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { MulterModule } from '@nestjs/platform-express';
           User, 
           Activity,
           // PdfFile,
-          UserActivity
+          UserActivity,
+          File,
         ],
       }),
       inject: [ConfigService],
@@ -37,7 +39,8 @@ import { MulterModule } from '@nestjs/platform-express';
       User, 
       Activity,
       // PdfFile,
-      UserActivity
+      UserActivity,
+      File,
     ]),
     MulterModule.register({
       dest: './uploads',

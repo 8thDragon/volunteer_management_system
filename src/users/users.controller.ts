@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query, Sse } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query, Sse, ExecutionContext } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,16 +10,28 @@ import { MessageBody, SubscribeMessage } from '@nestjs/websockets/decorators';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 import { CheckUserDto } from './dto/check-user.dto';
 import { interval, map, Observable, of } from 'rxjs';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
+import { InjectModel } from '@nestjs/sequelize';
+import { JwtService } from '@nestjs/jwt';
+import { AppGateway } from './users.gateway';
+import { REQUEST } from '@nestjs/core';
+import { ConnectedSocket } from '@nestjs/websockets/decorators/connected-socket.decorator';
+import { Socket } from 'socket.io';
+const { Op } = require("sequelize");
 
 interface MessageEvent {
   data: string | object
 }
-
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService,) {}
+  constructor(private readonly usersService: UsersService,
+              @Inject(AppGateway) private readonly appGateWay: AppGateway,
+              @InjectModel(UserActivity) 
+              private userActivity: typeof UserActivity,
+              private jwtService: JwtService,
+              @Inject('REQUEST') private readonly request: Request,) {}
 
   @SubscribeMessage('notification')
   handleNotification(@MessageBody() message: string) {
@@ -105,6 +117,43 @@ export class UsersController {
               @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(updateUserDto, request);
   }
+
+  @SubscribeMessage('events')
+  async handleEventNotification(client: any, request: Request) {
+    return this.usersService.handleEventNotification(client, request)
+  }
+
+  // @SubscribeMessage('events')
+  // async handleEventNotification(client: any, payload: any) {
+  //   console.log('test')
+  //   const cookie = this.request.cookies['jwt']
+  //   console.log(cookie)
+  //   if(false) {
+  //     console.log('test')
+  //     const dataUser = await this.jwtService.verifyAsync(cookie)
+  //     if (dataUser['id']) {
+  //       const events = await this.userActivity.findAll({
+  //         where: {
+  //           userId: {[Op.contains]:[dataUser['id']],},
+  //           date: {
+  //             [Op.gte]: new Date(),
+  //             [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+  //           },
+  //           canceled: false,
+  //         },
+  //       });
+  //       let test1 = new Date()
+  //       let test = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+  //       console.log(test1)
+  //       console.log(test)
+      
+
+  //       for (const event of events) {
+  //         client.emit('event', event.toJSON());
+  //       }
+  //     }
+  //   }
+  // }
 
   @Get('/confirm/:id')
   confirmEmail(@Param() id:number) {

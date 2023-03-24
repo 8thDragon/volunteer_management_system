@@ -1,6 +1,7 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table, BelongsToMany, HasMany } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table, BelongsToMany, HasMany, HasOne } from "sequelize-typescript";
 import { UserActivity } from "src/user-activities/entities/user-activity.entity";
 import { User } from "src/users/entities/user.entity";
+import { File } from "./file.entity";
 // import { PdfFile } from "./pdfFile.entity";
 
 export interface activityAttributes {
@@ -56,6 +57,13 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
         hooks: true
     })
     userActivities?: UserActivity[];
+
+    @HasMany(() => File, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+    })
+    files?: File[];
 
     // @HasMany(() => PdfFile, {
     //     onUpdate: "CASCADE",

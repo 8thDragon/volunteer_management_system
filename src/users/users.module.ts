@@ -8,6 +8,8 @@ import { JwtModule } from '@nestjs/jwt/dist';
 import { Activity } from 'src/activities/entities/activity.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { MulterModule } from '@nestjs/platform-express';
+import { AppGateway } from './users.gateway';
+import { File } from 'src/activities/entities/file.entity';
 // import { PdfFile } from 'src/activities/entities/pdfFile.entity';
 
 @Module({
@@ -28,7 +30,8 @@ import { MulterModule } from '@nestjs/platform-express';
           User, 
           Activity,
           // PdfFile,
-          UserActivity
+          UserActivity,
+          File,
         ],
       }),
       inject: [ConfigService],
@@ -38,7 +41,8 @@ import { MulterModule } from '@nestjs/platform-express';
       User, 
       Activity,
       // PdfFile,
-      UserActivity
+      UserActivity,
+      File,
     ]),
     JwtModule.register({
       secret: 'secret',
@@ -49,6 +53,6 @@ import { MulterModule } from '@nestjs/platform-express';
     }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, ConfigService]
+  providers: [UsersService, ConfigService, AppGateway],
 })
 export class UsersModule {}
