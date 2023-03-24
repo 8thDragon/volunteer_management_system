@@ -5,4 +5,6 @@ export class CreateActivityDto {
     size_number?: number;
     received_hours?: number;
     map?: string;
+    picture?: string;
+    priority?: number;
 }

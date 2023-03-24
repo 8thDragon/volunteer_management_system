@@ -74,7 +74,7 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Column({ allowNull: true, type: DataType.STRING(255) })
     know_from?: string;
 
-    @Column({ allowNull: false })
+    @Column({ allowNull: false, type: DataType.DATEONLY })
     birthday?: Date;
 
     @Column({ allowNull: false, type: DataType.BOOLEAN(), defaultValue: true})

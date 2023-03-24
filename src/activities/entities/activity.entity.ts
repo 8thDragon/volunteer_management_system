@@ -15,7 +15,10 @@ export interface activityAttributes {
     start_date?: Date;
     end_date?: Date;
     is_open?: boolean;
+    picture?: string;
+    priority?: number;
     users?: User[];
+    files?: File[];
 }
 
 @Table({ tableName: "activities", timestamps: true })
@@ -50,6 +53,12 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
 
     @Column({ allowNull: false })
     is_open?: boolean;
+
+    @Column({ })
+    picture?: string;
+
+    @Column({ })
+    priority?: number;
 
     @HasMany(() => UserActivity, {
         onUpdate: "CASCADE",
