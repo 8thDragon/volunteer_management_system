@@ -49,10 +49,10 @@ export class ActivitiesController {
   //   console.log(file)
   // }
 
-  // @Get(':id')
-  // getOneActivity(@Param('id') id: string) {
-  //   return this.activitiesService.getOneActivity(+id);
-  // }
+  @Get('getOneId/:id')
+  getOneActivity(@Param('id') id: string) {
+    return this.activitiesService.getOneActivity(+id);
+  }
 
   @Post('fileupload')
   @ApiConsumes('multipart/form-data')
