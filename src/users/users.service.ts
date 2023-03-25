@@ -339,38 +339,49 @@ export class UsersService {
     return null;
   }
 
+  async getUserToken(request: Request) {
+    const cookie = request.cookies['jwt']
+    console.log(cookie)
+    const data = await this.jwtService.verifyAsync(cookie)
+
+    return data['id']
+  }
+
   @SubscribeMessage('events')
   async handleEventNotification(client: any, request: Request) {
     console.log('test')
     // const request = context.switchToHttp().getRequest();
-    const cookie = request.cookies['jwt']
+    // const cookie = request.cookies['jwt']
     // const cookie = this.request.cookies['jwt']
-    console.log(cookie)
-    if(cookie) {
-      console.log('test')
-      const dataUser = await this.jwtService.verifyAsync(cookie)
-      if (dataUser['id']) {
-        const events = await this.userActivity.findAll({
-          where: {
-            userId: {[Op.contains]:[dataUser['id']],},
-            date: {
-              [Op.gte]: new Date(),
-              [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-            },
-            canceled: false,
-          },
-        });
-        let test1 = new Date()
-        let test = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-        console.log(test1)
-        console.log(test)
+    const cookie1 = this.getUserToken(request)
+    console.log(cookie1)
+
+    // console.log(cookie)
+    // if(cookie) {
+    //   console.log('test')
+    //   const dataUser = await this.jwtService.verifyAsync(cookie)
+    //   if (dataUser['id']) {
+    //     const events = await this.userActivity.findAll({
+    //       where: {
+    //         userId: {[Op.contains]:[dataUser['id']],},
+    //         date: {
+    //           [Op.gte]: new Date(),
+    //           [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+    //         },
+    //         canceled: false,
+    //       },
+    //     });
+    //     let test1 = new Date()
+    //     let test = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+    //     console.log(test1)
+    //     console.log(test)
       
 
-        for (const event of events) {
-          client.emit('event', event.toJSON());
-        }
-      }
-    }
+    //     for (const event of events) {
+    //       client.emit('event', event.toJSON());
+    //     }
+    //   }
+    // }
   }
 
 }

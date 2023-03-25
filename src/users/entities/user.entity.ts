@@ -24,6 +24,7 @@ export interface userAttributes {
     talent?: string;
     know_from?: string;
     birthday?: Date;
+    received_hours?: number;
     non_blacklist?: boolean;
     emailVerificationToken?: string;
     emailVerified?: boolean;
@@ -76,6 +77,9 @@ export class User extends Model<userAttributes, userAttributes> implements userA
 
     @Column({ allowNull: false, type: DataType.DATEONLY })
     birthday?: Date;
+
+    @Column({ allowNull: true })
+    received_hours?: number;
 
     @Column({ allowNull: false, type: DataType.BOOLEAN(), defaultValue: true})
     non_blacklist?: boolean;
