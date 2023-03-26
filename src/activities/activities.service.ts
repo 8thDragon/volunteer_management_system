@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'src/users/entities/user.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { PdfFileDto } from './dto/pdf-file.dto';
+import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 
 @Injectable()
 export class ActivitiesService {
@@ -47,6 +48,33 @@ export class ActivitiesService {
     response.success = true;
     response.result = { ...updateActivityDto };
     return response;
+  }
+
+  async finishActivity(updateUserActivityDto: UpdateUserActivityDto) {
+    let response = new ResponseStandard()
+    let activity = await this.userActivityModel.findOne({where: {
+      id: updateUserActivityDto.id
+    }})
+    let ac = await this.activityModel.findOne({where: {
+      id: activity.activityId
+    }})
+    if (activity) {
+      if (activity.is_ended == false) {
+        await activity.update({ is_ended: true })
+        for (let i in activity.userId) {
+          console.log(activity.userId[i],'++++++++++++++')
+          let user = await this.userModel.findByPk(activity.userId[i])
+          let addHours = user.received_hours + ac.received_hours
+          await user.update({ received_hours: addHours})
+          console.log(user)
+        }
+      } else {
+        return 'You already finish this event.'
+      }
+      return activity
+    } else {
+      return 'this event is not exist.'
+    }
   }
 
   async uploadPdf(data: Buffer): Promise<any> {
