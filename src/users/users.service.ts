@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -290,19 +290,34 @@ export class UsersService {
     return { message: 'Email verification successful' };
   }
 
-  async resetPassword(createUserDto) {
+  async sendPasswordResetEmail(createUserDto: CreateUserDto) {
     const user = await this.userModel.findOne({ where: { email: createUserDto.email } });
 
     if (!user) {
       throw new Error('User not found');
     }
 
-    user.generateEmailVerificationToken();
+    user.generatePasswordResetToken();
     await user.save();
 
-    await user.sendVerificationEmail();
+    await user.sendPasswordResetEmail();
 
     return { message: 'Password reset email sent' };
+  }
+
+  async resetPassword(token: string, createUserDto: CreateUserDto) {
+    const user = await this.userModel.findOne({ where: { passwordResetToken: token } });
+  
+    if (!user) {
+      throw new NotFoundException('Invalid password reset token');
+    } else if (user.emailVerified == true) {
+      const passwordHash = await bcrypt.hash(createUserDto.password,12);
+      await user.update({password: passwordHash, passwordResetToken: null})
+    
+      return { message: 'Password reset successful' };
+    } else {
+      return { message: 'You are not verified email'}
+    }
   }
 
   async getTest() {
@@ -351,37 +366,37 @@ export class UsersService {
   async handleEventNotification(client: any, request: Request) {
     console.log('test')
     // const request = context.switchToHttp().getRequest();
-    // const cookie = request.cookies['jwt']
+    const cookie = request.cookies['jwt']
     // const cookie = this.request.cookies['jwt']
-    const cookie1 = this.getUserToken(request)
-    console.log(cookie1)
+    // const cookie1 = this.getUserToken(request)
+    // console.log(cookie1)
 
-    // console.log(cookie)
-    // if(cookie) {
-    //   console.log('test')
-    //   const dataUser = await this.jwtService.verifyAsync(cookie)
-    //   if (dataUser['id']) {
-    //     const events = await this.userActivity.findAll({
-    //       where: {
-    //         userId: {[Op.contains]:[dataUser['id']],},
-    //         date: {
-    //           [Op.gte]: new Date(),
-    //           [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-    //         },
-    //         canceled: false,
-    //       },
-    //     });
-    //     let test1 = new Date()
-    //     let test = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-    //     console.log(test1)
-    //     console.log(test)
+    console.log(cookie)
+    if(cookie) {
+      console.log('test')
+      const dataUser = await this.jwtService.verifyAsync(cookie)
+      if (dataUser['id']) {
+        const events = await this.userActivity.findAll({
+          where: {
+            userId: {[Op.contains]:[dataUser['id']],},
+            date: {
+              [Op.gte]: new Date(),
+              [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+            },
+            canceled: false,
+          },
+        });
+        let test1 = new Date()
+        let test = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+        console.log(test1)
+        console.log(test)
       
 
-    //     for (const event of events) {
-    //       client.emit('event', event.toJSON());
-    //     }
-    //   }
-    // }
+        for (const event of events) {
+          client.emit('event', event.toJSON());
+        }
+      }
+    }
   }
 
 }

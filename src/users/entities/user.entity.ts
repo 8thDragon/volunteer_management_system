@@ -27,6 +27,7 @@ export interface userAttributes {
     received_hours?: number;
     non_blacklist?: boolean;
     emailVerificationToken?: string;
+    passwordResetToken?: string;
     emailVerified?: boolean;
     email?: string;
     password?: string;
@@ -86,6 +87,9 @@ export class User extends Model<userAttributes, userAttributes> implements userA
 
     @Column({ })
     emailVerificationToken?: string;
+    
+    @Column({ })
+    passwordResetToken?: string;
 
     @Column({ defaultValue: false })
     emailVerified?: boolean;
@@ -102,6 +106,9 @@ export class User extends Model<userAttributes, userAttributes> implements userA
 
     generateEmailVerificationToken() {
         this.emailVerificationToken = uuidv4();
+    }
+    generatePasswordResetToken() {
+        this.passwordResetToken = uuidv4();
     }
 
     async sendVerificationEmail() {
@@ -123,5 +130,26 @@ export class User extends Model<userAttributes, userAttributes> implements userA
         });
     
         console.log(`Verification email sent: ${info.messageId}`);
+    }
+
+    async sendPasswordResetEmail() {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'ickevinsheriff@gmail.com',
+          pass: 'bxjanvlgpmquxnar'
+        }
+      });
+  
+      const info = await transporter.sendMail({
+        from: 'ickevinsheriff@gmail.com',
+        to: this.email,
+        subject: 'Reset your password',
+        text: 'Please click the following link to reset your password:',
+        html: `<p>Please click the following link to verify your email address:</p>
+        <a href="http://example.com/reset-password?token=${this.passwordResetToken}">Reset password</a>`
+      });
+  
+      console.log(`Password reset email sent: ${info.messageId}`);
     }
 }

@@ -120,6 +120,7 @@ export class UsersController {
 
   @SubscribeMessage('events')
   async handleEventNotification(client: any, request: Request) {
+    console.log('test controller')
     return this.usersService.handleEventNotification(client, request)
   }
 
@@ -165,10 +166,17 @@ export class UsersController {
     return this.usersService.verifyEmail(token)
   }
 
-  @Post('/reset-password')
-  resetPassword(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.resetPassword(createUserDto)
+  @Post('/password-reset')
+  sendPasswordResetEmail(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.sendPasswordResetEmail(createUserDto)
   }
+
+  @Post('/reset-password')
+  resetPassword(@Query('token') token: string,
+                @Body() createUserDto: CreateUserDto) {
+    return this.usersService.resetPassword(token, createUserDto)
+  }
+
 
   @Sse('/event')
   sendEvent(): Observable<MessageEvent> {
