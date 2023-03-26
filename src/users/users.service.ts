@@ -187,6 +187,26 @@ export class UsersService {
       }
     }
   }
+
+  async getUserActivity(createUserActivityDto: CreateUserActivityDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let userActiv = this.userActivityModel.findAll({ where: {
+      userId: {[Op.contains]:[data['id']],},
+      is_ended: false
+    }})
+    return userActiv
+  }
+
+  async getEndedUserActivity(createUserActivityDto: CreateUserActivityDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let userActiv = this.userActivityModel.findAll({ where: {
+      userId: {[Op.contains]:[data['id']],},
+      is_ended: true
+    }})
+    return userActiv
+  }
   
   async GetDataArray(createUserActivityDto: CreateUserActivityDto,request: Request) {
     let response = new ResponseStandard()

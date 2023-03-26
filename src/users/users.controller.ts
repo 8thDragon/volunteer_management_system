@@ -105,6 +105,18 @@ export class UsersController {
     return this.usersService.updateConfirmedId(createUserActivityDto, updateUserActivityDto, request)                    
   }
 
+  @Get('get-useractivity')
+  async getUserActivity(@Body() createUserActivityDto: CreateUserActivityDto,
+                        @Req() request: Request) {
+    return this.usersService.getUserActivity(createUserActivityDto,request)
+  }
+
+  @Get('get-ended-useractivity')
+  async getEndedUserActivity(@Body() createUserActivityDto: CreateUserActivityDto,
+                            @Req() request: Request) {
+    return this.usersService.getEndedUserActivity(createUserActivityDto,request)
+  }
+
   @Patch('cancel_activity')
   async cancelActivity(@Body() createUserActivityDto: CreateUserActivityDto,
                           @Body() updateUserActivityDto: UpdateUserActivityDto,

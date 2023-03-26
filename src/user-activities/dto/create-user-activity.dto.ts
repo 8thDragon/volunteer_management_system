@@ -3,4 +3,5 @@ export class CreateUserActivityDto {
     userIdConfirmed?: number;
     activityId?: number;
     date?: Date;
+    is_ended?: boolean;
 }
