@@ -104,13 +104,15 @@ export class UsersService {
   //   return response
   // }
 
-  async postUserActivities2(createUserActivityDto: CreateUserActivityDto,checkUserDto : CheckUserDto,request: Request) {
+  async postUserActivities2(createUserActivityDto: CreateUserActivityDto,createActivityDto: CreateActivityDto,checkUserDto : CheckUserDto,request: Request) {
     let response = new ResponseStandard()
     const cookie = request.cookies['jwt']
     const data = await this.jwtService.verifyAsync(cookie)
     if (data['id']) {
+      let activity = await this.activityModel.findByPk(createUserActivityDto.activityId)
       let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
         activityId: createUserActivityDto.activityId,
+        userActivityName: activity.activity_name,
         date: createUserActivityDto.date
         }})
       let user = await this.userModel.findOne({where: {
@@ -201,9 +203,20 @@ export class UsersService {
   async getEndedUserActivity(createUserActivityDto: CreateUserActivityDto, request: Request) {
     const cookie = request.cookies['jwt']
     const data = await this.jwtService.verifyAsync(cookie)
+    let activity = this.activityModel.findAll({include: [UserActivity]})
     let userActiv = this.userActivityModel.findAll({ where: {
       userId: {[Op.contains]:[data['id']],},
       is_ended: true
+    }})
+    return userActiv
+  }
+
+  async getUserActivityName(createUserActivityDto: CreateUserActivityDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let userActiv = this.userActivityModel.findAll({ where: {
+      userId: {[Op.contains]:[data['id']],},
+      is_ended: false
     }})
     return userActiv
   }

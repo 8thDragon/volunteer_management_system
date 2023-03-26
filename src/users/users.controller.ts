@@ -88,8 +88,9 @@ export class UsersController {
   @Post('dateAc2')
   async postActivities2(@Body() createUserActivityDto : CreateUserActivityDto,
                         @Body() checkUserDto : CheckUserDto,
+                        @Body() createActivityDto: CreateActivityDto,
                         @Req() request: Request) {
-    return this.usersService.postUserActivities2(createUserActivityDto,checkUserDto,request);
+    return this.usersService.postUserActivities2(createUserActivityDto,checkUserDto,createActivityDto,request);
   }
 
   @Get('get_data_array')

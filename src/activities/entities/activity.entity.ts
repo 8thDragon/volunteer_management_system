@@ -8,6 +8,13 @@ export interface activityAttributes {
     id?: number;
     activity_name?: string;
     activity_details?: string;
+    time_detail?: string;
+    clothes_detail?: string;
+    etc_detail?: string;
+    travel_detail?: string;
+    travel_public_detail?: string;
+    travel_etc_detail?: string;
+    timeline?: string;
     regised_number?: number;
     size_number?: number;
     received_hours?: number;
@@ -19,6 +26,7 @@ export interface activityAttributes {
     priority?: number;
     users?: User[];
     files?: File[];
+    userActivities?: UserActivity[];
 }
 
 @Table({ tableName: "activities", timestamps: true })
@@ -30,8 +38,29 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
     @Column({ allowNull: false, type: DataType.STRING(255) })
     activity_name?: string;
 
-    @Column({ allowNull: false })
+    @Column({ allowNull: true })
     activity_details?: string;
+
+    @Column({ allowNull: true })
+    time_detail?: string;
+
+    @Column({ allowNull: true })
+    clothes_detail?: string;
+
+    @Column({ allowNull: true })
+    etc_detail?: string;
+
+    @Column({ allowNull: true })
+    travel_detail?: string;
+
+    @Column({ allowNull: true })
+    travel_public_detail?: string;
+    
+    @Column({ allowNull: true })
+    travel_etc_detail?: string;
+
+    @Column({ allowNull: true })
+    timeline?: string;
 
     @Column({ allowNull: true })
     regised_number?: number;

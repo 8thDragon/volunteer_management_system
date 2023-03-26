@@ -4,6 +4,7 @@ import { User } from "src/users/entities/user.entity";
 
 export interface userActivityAttributes {
     id?: number;
+    userActivityName?: string;
     userId?: number[];
     userIdConfirmed?: number[];
     activityId?: number;
@@ -18,6 +19,9 @@ export class UserActivity extends Model<userActivityAttributes, userActivityAttr
 
     @Column({ primaryKey: true, autoIncrement: true, type: DataType.INTEGER })
     id?: number;
+
+    @Column({})
+    userActivityName?: string;
 
     // @ForeignKey(() => User)
     @Column({ type: DataType.ARRAY(DataType.INTEGER), defaultValue: Array })
