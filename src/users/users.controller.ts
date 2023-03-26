@@ -117,6 +117,11 @@ export class UsersController {
     return this.usersService.getEndedUserActivity(createUserActivityDto,request)
   }
 
+  @Get('get-open-activity')
+  async getOpenActivities(){
+    return this.usersService.getOpenActivities()
+  }
+
   @Patch('cancel_activity')
   async cancelActivity(@Body() createUserActivityDto: CreateUserActivityDto,
                           @Body() updateUserActivityDto: UpdateUserActivityDto,

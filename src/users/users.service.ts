@@ -349,6 +349,13 @@ export class UsersService {
     return this.activityModel.findAll({})
   }
 
+  async getOpenActivities() {
+    let openActiv = this.activityModel.findAll({ where: {
+      is_open: true
+    }})
+    return openActiv
+  }
+
   async confirmEmail(id:number) {
     // const userId = redis.get(id)
   }
