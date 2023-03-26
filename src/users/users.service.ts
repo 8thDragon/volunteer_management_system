@@ -176,12 +176,12 @@ export class UsersService {
         let act_date = userActiv.date
         let act_date_gen = new Date(act_date)
         act_date_gen.setDate(act_date_gen.getDate() - 1)
-        let date_check = date_now.getDate() < act_date_gen.getDate()
+        let date_check = date_now < act_date_gen
         if (userActiv && !userActiv.is_started && (date_check)) {
           let new_uID = userActiv.userId.filter((new_id) => new_id !== data['id'])
           await userActiv.update({userId: new_uID})
         } else {
-          throw new BadRequestException('You can not cancle This activity.')
+          throw new BadRequestException('You can not cancel This activity.')
         }
         return date_now.getDate() < act_date_gen.getDate()
       } else {
