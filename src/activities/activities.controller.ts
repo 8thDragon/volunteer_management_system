@@ -89,62 +89,84 @@ export class ActivitiesController {
     // return this.accountService.uploadPathFileToAccount(response)
   }
 
-  @Get('getFileTest')
-  async getFile(@Res() res: Response) {
-    let fileUp = await this.fileUpload.findByPk(4)
-    const file = createReadStream(join(process.cwd(),fileUp.file_path));
-    console.log(fileUp.file_path, '+++++++++++++++++')
-    const filePath = join(process.cwd(), fileUp.file_path);
-    console.log(filePath, '22222222222222222')
+  // @Get('getFileTest')
+  // async getFile(@Res() res: Response) {
+  //   let fileUp = await this.fileUpload.findByPk(4)
+  //   const file = createReadStream(join(process.cwd(),fileUp.file_path));
+  //   console.log(fileUp.file_path, '+++++++++++++++++')
+  //   const filePath = join(process.cwd(), fileUp.file_path);
+  //   console.log(filePath, '22222222222222222')
 
-    const pdfBytes = this.modifyPdf(filePath, 'Hello World!');
+  //   const pdfBytes = this.modifyPdf(filePath, 'Hello World!');
 
-    console.log(fileUp.file_path, '33333333333333333')
-    // file.pipe(res);
-    res.set({
-      // 'Content-Type': 'application/json',
-      'Content-Disposition': `attachment; filename="${fileUp.file_name}"`,
-      'Content-Type': 'application/pdf',
-    });
+  //   console.log(fileUp.file_path, '33333333333333333')
+  //   // file.pipe(res);
+  //   res.set({
+  //     // 'Content-Type': 'application/json',
+  //     'Content-Disposition': `attachment; filename="${fileUp.file_name}"`,
+  //     'Content-Type': 'application/pdf',
+  //   });
 
-    res.send(pdfBytes)
-  }
+  //   res.send(pdfBytes)
+  // }
 
-  async modifyPdf(filePath: string, text: string) {
-    const existingPdfBytes = await createReadStream(filePath).read();
+  // async modifyPdf(filePath: string, text: string) {
+  //   const existingPdfBytes = await createReadStream(filePath).read();
   
-    if (existingPdfBytes === null) {
-      throw new Error('PDF file is null or undefined.');
-    }
+  //   if (existingPdfBytes === null) {
+  //     throw new Error('PDF file is null or undefined.');
+  //   }
   
-    const pdfDoc = await PDFDocument.load(existingPdfBytes);
-    const [firstPage] = pdfDoc.getPages();
-    const { width, height } = firstPage.getSize();
+  //   const pdfDoc = await PDFDocument.load(existingPdfBytes);
+  //   const [firstPage] = pdfDoc.getPages();
+  //   const { width, height } = firstPage.getSize();
   
-    const font = await pdfDoc.embedFont('Helvetica');
+  //   const font = await pdfDoc.embedFont('Helvetica');
   
-    firstPage.drawText(text, {
-      x: width / 2,
-      y: height / 2,
-      size: 50,
-      font,
-      opacity: 0.5,
-    });
+  //   firstPage.drawText(text, {
+  //     x: width / 2,
+  //     y: height / 2,
+  //     size: 50,
+  //     font,
+  //     opacity: 0.5,
+  //   });
   
-    const pdfBytes = await pdfDoc.save();
-    await createWriteStream(filePath).write(pdfBytes);
+  //   const pdfBytes = await pdfDoc.save();
+  //   await createWriteStream(filePath).write(pdfBytes);
   
-    return pdfBytes;
-  }
+  //   return pdfBytes;
+  // }
 
   // @Get('getFileTest')
   // async getFile(@Res() res: Response) {
   //   let fileUp = await this.fileUpload.findByPk(2)
-  //   const file = createReadStream(join(process.cwd(),fileUp.file_path));
-  //   file.pipe(res);
-  //   res.set({
-  //     // 'Content-Type': 'application/json',
-  //     'Content-Disposition': `attachment; filename="${fileUp.file_name}"`,
-  //   });
-  // }
+  //   const fileStream = createReadStream(join(process.cwd(),fileUp.file_path));
+  //   const pdfDoc = await PDFDocument.load(fileStream);
+
+  //   // Add a watermark to each page
+  //   const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  //   const pages = pdfDoc.getPages();
+  //   for (const page of pages) {
+  //     const { width, height } = page.getSize();
+  //     const text = 'CONFIDENTIAL';
+  //     const textSize = font.widthOfTextAtSize(text, 50);
+  //     const centerX = width / 2;
+  //     const centerY = height / 2;
+  //     page.drawText(text, {
+  //       x: centerX - textSize / 2,
+  //       y: centerY,
+  //       size: 50,
+  //       font: font,
+  //       opacity: 0.5,
+  //     });
+  //   }
+
+  //   // Stream the modified PDF to the response
+  //   const pdfBytes = await pdfDoc.save();
+  //     fileStream.pipe(res);
+  //     res.set({
+  //       // 'Content-Type': 'application/json',
+  //       'Content-Disposition': `attachment; filename="${fileUp.file_name}"`,
+  //     });
+  //   }
 }

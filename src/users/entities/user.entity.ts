@@ -94,6 +94,9 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Column({ defaultValue: false })
     emailVerified?: boolean;
 
+    @Column({})
+    admin?: boolean;
+
     @Column({ allowNull: false, type: DataType.STRING(255), unique: true })
     email?: string;
 

@@ -124,13 +124,15 @@ export class UsersService {
           userActiv.update({userId: [data['id']]})
           response.success = true
           response.result = userActiv
-        } else {
+        } else if (activity.size_number >= userActiv.userId.length){
           console.log('push')
           if (!(userActiv.userId.includes(data['id']))) {
             let allUser = [...userActiv.userId,data['id']]
             userActiv.update({userId: allUser})
           }
           response.result = userActiv
+        } else {
+          throw new BadRequestException('This event is full')
         }
       } else {
         throw new BadRequestException('black list')
