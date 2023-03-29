@@ -79,7 +79,7 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
     @Column({ allowNull: true })
     end_date?: Date;
 
-    @Column({ allowNull: false })
+    @Column({ allowNull: false, defaultValue: false })
     is_open?: boolean;
 
     @Column({ })
