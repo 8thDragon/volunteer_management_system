@@ -9,6 +9,7 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
 // import { PdfFile } from './entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { File } from './entities/file.entity';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -42,6 +43,10 @@ import { File } from './entities/file.entity';
       UserActivity,
       File,
     ]),
+    JwtModule.register({
+      secret: 'secret',
+      signOptions: {expiresIn: '1w'}
+    }),
     MulterModule.register({
       dest: './uploads',
     }),
