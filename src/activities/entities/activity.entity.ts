@@ -34,31 +34,31 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
     @Column({ primaryKey: true, autoIncrement: true, type: DataType.INTEGER })
     id?: number;
 
-    @Column({ allowNull: false, type: DataType.STRING(255) })
+    @Column({ allowNull: false, type: DataType.TEXT })
     activity_name?: string;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.TEXT })
     activity_details?: string;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.TEXT })
     time_detail?: string;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.TEXT })
     clothes_detail?: string;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.TEXT })
     etc_detail?: string;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.TEXT })
     travel_detail?: string;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.TEXT })
     travel_public_detail?: string;
     
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.TEXT })
     travel_etc_detail?: string;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.TEXT })
     timeline?: string;
 
     @Column({ allowNull: true })
