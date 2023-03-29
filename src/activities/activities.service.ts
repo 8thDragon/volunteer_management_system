@@ -64,6 +64,7 @@ export class ActivitiesService {
       return 'this is no activity you want'
     } else if(user.admin == true){
       await activity.update({...updateActivityDto})
+      return activity
     }
   }
 
@@ -86,6 +87,7 @@ export class ActivitiesService {
     }})
     if (activity) {
       await activity.update({is_open: updateActivityDto.is_open})
+      return activity.is_open
     }
   }
 
