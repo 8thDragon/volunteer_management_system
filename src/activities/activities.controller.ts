@@ -85,6 +85,11 @@ export class ActivitiesController {
     return this.activitiesService.getCloseActivity(updateActivityDto)
   }
 
+  @Get('get_all_users')
+  async getAllUsers(){
+    return this.activitiesService.getAllUsers()
+  }
+
   @Post('fileupload')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(

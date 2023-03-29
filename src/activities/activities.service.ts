@@ -38,6 +38,10 @@ export class ActivitiesService {
     return response
   }
 
+  async getAllUsers() {
+    return await this.userModel.findAll()
+  }
+
   // async updateActivity(id: number, updateActivityDto: UpdateActivityDto): Promise<any> {
   //   let response = new ResponseStandard()
   //   let activity = await this.activityModel.findByPk(id)
