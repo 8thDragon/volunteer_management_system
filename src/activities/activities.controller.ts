@@ -45,6 +45,11 @@ export class ActivitiesController {
     return this.activitiesService.updateActivityStatus(updateActivityDto);
   }
 
+  @Patch('update_activity_status_toggle')
+  updateActivityStatusFromToggle(@Body() updateActivityDto: UpdateActivityDto) {
+    return this.activitiesService.updateActivityStatusFromToggle(updateActivityDto);
+  }
+
   @Patch('finish_activity')
   finishActivity(@Body() updateUserActivityDto: UpdateUserActivityDto) {
     return this.activitiesService.finishActivity(updateUserActivityDto)

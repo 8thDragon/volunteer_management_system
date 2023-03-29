@@ -80,6 +80,15 @@ export class ActivitiesService {
     }
   }
 
+  async updateActivityStatusFromToggle(updateActivityDto: UpdateActivityDto) {
+    let activity = await this.activityModel.findOne({where : {
+      id: updateActivityDto.id,
+    }})
+    if (activity) {
+      await activity.update({is_open: updateActivityDto.is_open})
+    }
+  }
+
   async finishActivity(updateUserActivityDto: UpdateUserActivityDto) {
     let response = new ResponseStandard()
     let activity = await this.userActivityModel.findOne({where: {
