@@ -11,6 +11,7 @@ import { PdfFileDto } from './dto/pdf-file.dto';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request, Express } from 'express';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class ActivitiesService {
@@ -38,8 +39,13 @@ export class ActivitiesService {
     return response
   }
 
-  async getAllUsers() {
-    return await this.userModel.findAll()
+  async getAllUsers(request: Request,createUserDto: CreateUserDto) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let user = await this.userModel.findByPk(data['id'])
+    if (user && user.admin == true) {
+      return await this.userModel.findAll()
+    }
   }
 
   // async updateActivity(id: number, updateActivityDto: UpdateActivityDto): Promise<any> {

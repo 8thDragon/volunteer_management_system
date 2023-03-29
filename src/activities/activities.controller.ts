@@ -3,7 +3,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
-import { Response, Request, Express } from 'express';
+import { Response, Request, Express, request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 // const multer = require('multer')
 import { diskStorage, Multer } from 'multer';
@@ -18,6 +18,7 @@ import { join } from 'path';
 import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 // import { PdfFile } from './entities/pdfFile.entity';
 
 @Controller('activities')
@@ -86,8 +87,9 @@ export class ActivitiesController {
   }
 
   @Get('get_all_users')
-  async getAllUsers(){
-    return this.activitiesService.getAllUsers()
+  async getAllUsers(@Req() request: Request,
+                    @Body() createUserDto: CreateUserDto){
+    return this.activitiesService.getAllUsers(request,createUserDto)
   }
 
   @Post('fileupload')
