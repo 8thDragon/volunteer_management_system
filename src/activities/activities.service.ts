@@ -9,6 +9,8 @@ import { User } from 'src/users/entities/user.entity';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { PdfFileDto } from './dto/pdf-file.dto';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
+import { JwtService } from '@nestjs/jwt';
+import { Response, Request, Express } from 'express';
 
 @Injectable()
 export class ActivitiesService {
@@ -19,6 +21,7 @@ export class ActivitiesService {
     private activityModel: typeof Activity,
     @InjectModel(UserActivity)
     private userActivityModel: typeof UserActivity,
+    private jwtService: JwtService,
     // @InjectModel(PdfFile)
     // private pdfFileModel: typeof PdfFile,
 ) {}
@@ -35,19 +38,46 @@ export class ActivitiesService {
     return response
   }
 
-  async updateActivity(id: number, updateActivityDto: UpdateActivityDto): Promise<any> {
-    let response = new ResponseStandard()
-    let activity = await this.activityModel.findByPk(id)
+  // async updateActivity(id: number, updateActivityDto: UpdateActivityDto): Promise<any> {
+  //   let response = new ResponseStandard()
+  //   let activity = await this.activityModel.findByPk(id)
+  //   if (!activity) {
+  //       response.success = false;
+  //       response.error_code = '404';
+  //       response.error_message = 'Account Not Found';
+  //       return response;
+  //   }
+  //   await activity.update({ ...updateActivityDto });
+  //   response.success = true;
+  //   response.result = { ...updateActivityDto };
+  //   return response;
+  // }
+
+  async updateActivity(updateActivityDto: UpdateActivityDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let user = await this.userModel.findByPk(data['id'])
+    let activity = await this.activityModel.findOne({where : {
+      id: updateActivityDto.id,
+    }})
     if (!activity) {
-        response.success = false;
-        response.error_code = '404';
-        response.error_message = 'Account Not Found';
-        return response;
+      return 'this is no activity you want'
+    } else if(user.admin == true){
+      await activity.update({...updateActivityDto})
     }
-    await activity.update({ ...updateActivityDto });
-    response.success = true;
-    response.result = { ...updateActivityDto };
-    return response;
+  }
+
+  async updateActivityStatus(updateActivityDto: UpdateActivityDto) {
+    let activity = await this.activityModel.findOne({where : {
+      id: updateActivityDto.id,
+    }})
+    if (!activity) {
+      return 'this is no activity you want'
+    } else if(activity.is_open == true) {
+      await activity.update({is_open: false})
+    } else {
+      await activity.update({is_open: true})
+    }
   }
 
   async finishActivity(updateUserActivityDto: UpdateUserActivityDto) {
@@ -105,5 +135,19 @@ export class ActivitiesService {
             response.result = activ
         }
         return response
+  }
+
+  async getOpenActivity(updateActivityDto: UpdateActivityDto) {
+    let Activ = this.activityModel.findAll({ where: {
+      is_open: true
+    }})
+    return Activ
+  }
+
+  async getCloseActivity(updateActivityDto: UpdateActivityDto) {
+    let Activ = this.activityModel.findAll({ where: {
+      is_open: true
+    }})
+    return Activ
   }
 }

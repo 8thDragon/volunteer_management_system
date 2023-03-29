@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Res, Req, StreamableFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { Response, Request, Express } from 'express';
+import { JwtService } from '@nestjs/jwt';
 // const multer = require('multer')
 import { diskStorage, Multer } from 'multer';
 import { PdfFileDto } from './dto/pdf-file.dto';
@@ -14,7 +15,7 @@ import { File } from './entities/file.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import { createReadStream, createWriteStream, readFileSync } from 'fs';
 import { join } from 'path';
-import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 // import { PdfFile } from './entities/pdfFile.entity';
@@ -33,10 +34,15 @@ export class ActivitiesController {
     return this.activitiesService.createActivity(createActivityDto);
   }
 
-  @Patch('update_activity/:id')
-  updateActivity(@Param('id') id: string, 
-                @Body() updateActivityDto: UpdateActivityDto) {
-    return this.activitiesService.updateActivity(+id, updateActivityDto);
+  @Patch('update_activity')
+  updateActivity(@Body() updateActivityDto: UpdateActivityDto,
+                @Req() request: Request) {
+    return this.activitiesService.updateActivity(updateActivityDto,request);
+  }
+
+  @Patch('update_activity_status')
+  updateActivityStatus(@Body() updateActivityDto: UpdateActivityDto) {
+    return this.activitiesService.updateActivityStatus(updateActivityDto);
   }
 
   @Patch('finish_activity')
@@ -64,6 +70,16 @@ export class ActivitiesController {
     return this.activitiesService.getOneActivity(+id);
   }
 
+  @Get('open_activity')
+  async getOpenActivity(@Body() updateActivityDto: UpdateActivityDto) {
+    return this.activitiesService.getOpenActivity(updateActivityDto)
+  }
+
+  @Get('close_activity')
+  async getCloseActivity(@Body() updateActivityDto: UpdateActivityDto) {
+    return this.activitiesService.getCloseActivity(updateActivityDto)
+  }
+
   @Post('fileupload')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
@@ -89,26 +105,32 @@ export class ActivitiesController {
     // return this.accountService.uploadPathFileToAccount(response)
   }
 
-  // @Get('getFileTest')
-  // async getFile(@Res() res: Response) {
-  //   let fileUp = await this.fileUpload.findByPk(4)
-  //   const file = createReadStream(join(process.cwd(),fileUp.file_path));
-  //   console.log(fileUp.file_path, '+++++++++++++++++')
-  //   const filePath = join(process.cwd(), fileUp.file_path);
-  //   console.log(filePath, '22222222222222222')
+  @Get('getFileTest')
+  async getFile(@Res() res: Response) {
+    let fileUp = await this.fileUpload.findByPk(3)
+    const fileBuffer = readFileSync(join(process.cwd(),fileUp.file_path));
+    const pdfDoc = await PDFDocument.load(fileBuffer)
+    const pages = pdfDoc.getPages()
+    const firstPage = pages[0]
+    const text = 'Hello, world!';
+    const textWidth = 24
+    const textHeight = 24;
+    const x = 50;
+    const y = 50;
 
-  //   const pdfBytes = this.modifyPdf(filePath, 'Hello World!');
+    firstPage.drawText(text, {
+      x: 1,
+      y: 1,
+      size: 24,
+    });
+    const modifiedPdfBytes = await pdfDoc.save();
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${fileUp.file_name}"`,
+    });
 
-  //   console.log(fileUp.file_path, '33333333333333333')
-  //   // file.pipe(res);
-  //   res.set({
-  //     // 'Content-Type': 'application/json',
-  //     'Content-Disposition': `attachment; filename="${fileUp.file_name}"`,
-  //     'Content-Type': 'application/pdf',
-  //   });
-
-  //   res.send(pdfBytes)
-  // }
+    res.send(modifiedPdfBytes)
+  }
 
   // async modifyPdf(filePath: string, text: string) {
   //   const existingPdfBytes = await createReadStream(filePath).read();
@@ -141,32 +163,10 @@ export class ActivitiesController {
   // async getFile(@Res() res: Response) {
   //   let fileUp = await this.fileUpload.findByPk(2)
   //   const fileStream = createReadStream(join(process.cwd(),fileUp.file_path));
-  //   const pdfDoc = await PDFDocument.load(fileStream);
-
-  //   // Add a watermark to each page
-  //   const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  //   const pages = pdfDoc.getPages();
-  //   for (const page of pages) {
-  //     const { width, height } = page.getSize();
-  //     const text = 'CONFIDENTIAL';
-  //     const textSize = font.widthOfTextAtSize(text, 50);
-  //     const centerX = width / 2;
-  //     const centerY = height / 2;
-  //     page.drawText(text, {
-  //       x: centerX - textSize / 2,
-  //       y: centerY,
-  //       size: 50,
-  //       font: font,
-  //       opacity: 0.5,
-  //     });
-  //   }
-
-  //   // Stream the modified PDF to the response
-  //   const pdfBytes = await pdfDoc.save();
   //     fileStream.pipe(res);
   //     res.set({
   //       // 'Content-Type': 'application/json',
   //       'Content-Disposition': `attachment; filename="${fileUp.file_name}"`,
   //     });
-  //   }
+  // }
 }
