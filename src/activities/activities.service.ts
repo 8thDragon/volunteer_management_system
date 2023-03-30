@@ -12,6 +12,7 @@ import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activ
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request, Express } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CheckUserDto } from 'src/users/dto/check-user.dto';
 
 @Injectable()
 export class ActivitiesService {
@@ -46,6 +47,17 @@ export class ActivitiesService {
     if (user && user.admin == true) {
       return await this.userModel.findAll()
     }
+  }
+
+  async updateUserStatus(checkUserDto: CheckUserDto) {
+    let user = await this.userModel.findOne({where : {
+      id: checkUserDto.id
+    }})
+    if (user) {
+      await user.update({non_blacklist: checkUserDto.non_blacklist})
+      return user.non_blacklist
+    }
+    return user.non_blacklist;
   }
 
   // async updateActivity(id: number, updateActivityDto: UpdateActivityDto): Promise<any> {

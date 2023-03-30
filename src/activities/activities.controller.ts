@@ -19,6 +19,7 @@ import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib';
 import { UserActivity } from 'src/user-activities/entities/user-activity.entity';
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CheckUserDto } from 'src/users/dto/check-user.dto';
 // import { PdfFile } from './entities/pdfFile.entity';
 
 @Controller('activities')
@@ -90,6 +91,11 @@ export class ActivitiesController {
   async getAllUsers(@Req() request: Request,
                     @Body() createUserDto: CreateUserDto){
     return this.activitiesService.getAllUsers(request,createUserDto)
+  }
+
+  @Patch('update_blacklist')
+  async updateUserStatus(@Body() checkUserDto: CheckUserDto) {
+    return this.activitiesService.updateUserStatus(checkUserDto)
   }
 
   @Post('fileupload')
