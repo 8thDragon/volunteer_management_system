@@ -49,15 +49,21 @@ export class ActivitiesService {
     }
   }
 
-  async updateUserStatus(checkUserDto: CheckUserDto) {
+  async updateBlacklist(checkUserDto: CheckUserDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let admin = await this.userModel.findByPk(data['id'])
     let user = await this.userModel.findOne({where : {
       id: checkUserDto.id
     }})
-    if (user) {
+    if (user && admin.admin == true) {
       await user.update({non_blacklist: checkUserDto.non_blacklist})
       return user.non_blacklist
+    } else {
+      return {
+        message: 'You are not admin'
+      }
     }
-    return user.non_blacklist;
   }
 
   // async updateActivity(id: number, updateActivityDto: UpdateActivityDto): Promise<any> {
@@ -103,13 +109,20 @@ export class ActivitiesService {
     }
   }
 
-  async updateActivityStatusFromToggle(updateActivityDto: UpdateActivityDto) {
+  async updateActivityStatusFromToggle(updateActivityDto: UpdateActivityDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let user = await this.userModel.findByPk(data['id'])
     let activity = await this.activityModel.findOne({where : {
       id: updateActivityDto.id,
     }})
-    if (activity) {
+    if (activity && user.admin == true) {
       await activity.update({is_open: updateActivityDto.is_open})
       return activity.is_open
+    } else {
+      return {
+        message: 'You are not admin'
+      }
     }
   }
 

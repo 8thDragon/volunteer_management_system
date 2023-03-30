@@ -48,8 +48,9 @@ export class ActivitiesController {
   }
 
   @Patch('update_activity_status_toggle')
-  updateActivityStatusFromToggle(@Body() updateActivityDto: UpdateActivityDto) {
-    return this.activitiesService.updateActivityStatusFromToggle(updateActivityDto);
+  updateActivityStatusFromToggle(@Body() updateActivityDto: UpdateActivityDto,
+                                @Req() request: Request) {
+    return this.activitiesService.updateActivityStatusFromToggle(updateActivityDto,request);
   }
 
   @Patch('finish_activity')
@@ -94,8 +95,9 @@ export class ActivitiesController {
   }
 
   @Patch('update_blacklist')
-  async updateUserStatus(@Body() checkUserDto: CheckUserDto) {
-    return this.activitiesService.updateUserStatus(checkUserDto)
+  async updateBlacklist(@Body() checkUserDto: CheckUserDto,
+                        @Req() request: Request) {
+    return this.activitiesService.updateBlacklist(checkUserDto,request)
   }
 
   @Post('fileupload')
