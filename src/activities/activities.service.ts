@@ -27,17 +27,14 @@ export class ActivitiesService {
     // @InjectModel(PdfFile)
     // private pdfFileModel: typeof PdfFile,
 ) {}
-  async createActivity(createActivityDto : CreateActivityDto) {
-    let response = new ResponseStandard()
-    let activity = await this.activityModel.create({...createActivityDto})
-    if (!activity) {
-      response.error_code = "400"
-      response.error_message = "Create Failed"
-    } else {
-      response.success = true
-      response.result = activity
+  async createActivity(createActivityDto : CreateActivityDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let user = await this.userModel.findByPk(data['id'])
+    if (user && user.admin == true) {
+      let activity = await this.activityModel.create({...createActivityDto})
+      return activity
     }
-    return response
   }
 
   async getAllUsers(request: Request,createUserDto: CreateUserDto) {
@@ -45,7 +42,13 @@ export class ActivitiesService {
     const data = await this.jwtService.verifyAsync(cookie)
     let user = await this.userModel.findByPk(data['id'])
     if (user && user.admin == true) {
-      return await this.userModel.findAll()
+      return await this.userModel.findAll({where: {
+        admin: false
+      }})
+    } else {
+      return {
+        message: 'You are not login or Yor are not admin'
+      }
     }
   }
 
@@ -126,15 +129,17 @@ export class ActivitiesService {
     }
   }
 
-  async finishActivity(updateUserActivityDto: UpdateUserActivityDto) {
-    let response = new ResponseStandard()
+  async finishActivity(updateUserActivityDto: UpdateUserActivityDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let user = await this.userModel.findByPk(data['id'])
     let activity = await this.userActivityModel.findOne({where: {
       id: updateUserActivityDto.id
     }})
     let ac = await this.activityModel.findOne({where: {
       id: activity.activityId
     }})
-    if (activity) {
+    if (activity && user.admin == true) {
       if (activity.is_ended == false) {
         await activity.update({ is_ended: true })
         for (let i in activity.userId) {
@@ -142,14 +147,18 @@ export class ActivitiesService {
           let user = await this.userModel.findByPk(activity.userId[i])
           let addHours = user.received_hours + ac.received_hours
           await user.update({ received_hours: addHours})
-          console.log(user)
+          return {
+            message: 'User received activity hours'
+          }
         }
       } else {
         return 'You already finish this event.'
       }
       return activity
     } else {
-      return 'this event is not exist.'
+      return {
+        message: 'This user activity is not exist or You are not admin'
+      }
     }
   }
 

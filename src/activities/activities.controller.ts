@@ -32,8 +32,9 @@ export class ActivitiesController {
               ) {}
 
   @Post('createActivity')
-  async createActivity(@Body() createActivityDto : CreateActivityDto) {
-    return this.activitiesService.createActivity(createActivityDto);
+  async createActivity(@Body() createActivityDto : CreateActivityDto,
+                      @Req() request: Request) {
+    return this.activitiesService.createActivity(createActivityDto,request);
   }
 
   @Patch('update_activity')
@@ -54,8 +55,9 @@ export class ActivitiesController {
   }
 
   @Patch('finish_activity')
-  finishActivity(@Body() updateUserActivityDto: UpdateUserActivityDto) {
-    return this.activitiesService.finishActivity(updateUserActivityDto)
+  finishActivity(@Body() updateUserActivityDto: UpdateUserActivityDto,
+                @Req() request: Request) {
+    return this.activitiesService.finishActivity(updateUserActivityDto,request)
   }
 
   @Post('upload_pdf')

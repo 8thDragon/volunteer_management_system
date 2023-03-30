@@ -27,6 +27,7 @@ export interface userAttributes {
     received_hours?: number;
     non_blacklist?: boolean;
     emailVerificationToken?: string;
+    admin?: boolean;
     passwordResetToken?: string;
     emailVerified?: boolean;
     email?: string;
