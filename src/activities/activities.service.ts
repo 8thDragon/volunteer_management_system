@@ -56,7 +56,8 @@ export class ActivitiesService {
       let user = await this.userModel.findAll({where: {
         admin: false
       },
-      order: [['received_hours','DESC']]
+      order: [['received_hours','DESC']],
+      limit: 10
       })
       return user
   }
