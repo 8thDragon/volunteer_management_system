@@ -102,6 +102,11 @@ export class ActivitiesController {
     return this.activitiesService.updateBlacklist(checkUserDto,request)
   }
 
+  @Get('get_user_for_competition')
+  async getAllUsersForUser() {
+    return this.activitiesService.getAllUsersForUser()
+  }
+
   @Post('fileupload')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(

@@ -52,6 +52,12 @@ export class ActivitiesService {
     }
   }
 
+  async getAllUsersForUser() {
+      return await this.userModel.findAll({where: {
+        admin: false
+      }})
+  }
+
   async updateBlacklist(checkUserDto: CheckUserDto, request: Request) {
     const cookie = request.cookies['jwt']
     const data = await this.jwtService.verifyAsync(cookie)
