@@ -53,9 +53,12 @@ export class ActivitiesService {
   }
 
   async getAllUsersForUser() {
-      return await this.userModel.findAll({where: {
+      let user = await this.userModel.findAll({where: {
         admin: false
-      }})
+      },
+      order: [['received_hours','DESC']]
+      })
+      return user
   }
 
   async updateBlacklist(checkUserDto: CheckUserDto, request: Request) {

@@ -80,7 +80,7 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Column({ allowNull: false, type: DataType.DATEONLY })
     birthday?: Date;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, defaultValue: 0 })
     received_hours?: number;
 
     @Column({ allowNull: false, type: DataType.BOOLEAN(), defaultValue: true})
