@@ -396,7 +396,8 @@ export class UsersService {
       throw new NotFoundException('Invalid password reset token');
     } else if (user.emailVerified == true) {
       const passwordHash = await bcrypt.hash(createUserDto.password,12);
-      await user.update({password: passwordHash, passwordResetToken: null})
+      createUserDto.password = passwordHash
+      await user.update({password: createUserDto.password, passwordResetToken: null})
     
       return { message: 'Password reset successful' };
     } else {
