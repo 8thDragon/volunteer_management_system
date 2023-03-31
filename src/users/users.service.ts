@@ -22,6 +22,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query, Sse
 import { Server, Socket } from 'socket.io';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { REQUEST } from '@nestjs/core';
+import { CommentDto } from 'src/activities/dto/commnet.dto';
+import { Comment } from 'src/activities/entities/comment.entity';
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
 const { Op } = require("sequelize");
@@ -42,6 +44,8 @@ export class UsersService {
     private userActivityModel: typeof UserActivity,
     @InjectModel(UserActivity) 
     private userActivity: typeof UserActivity,
+    @InjectModel(Comment)
+    private commentModel: typeof Comment,
     @Inject('REQUEST') private readonly request: Request,
     
 ) {}
@@ -142,6 +146,50 @@ export class UsersService {
     }
 
     return response
+  }
+
+  async postComment(commentDto: CommentDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let user = await this.userModel.findByPk(data['id'])
+    let activity = await this.activityModel.findByPk(commentDto.activityId)
+    let userActiv = await this.userActivityModel.findOne({where: {
+      userId: {[Op.contains]:[data['id']],},
+      activityId: commentDto.activityId
+    }})
+    let comment_day = new Date()
+    if (user && activity && userActiv && userActiv.is_ended == true) {
+      let comment = this.commentModel.create({
+        activity_name: activity.activity_name,
+        comment_detail: commentDto.comment_detail,
+        activity_date: userActiv.date,
+        comment_date: comment_day,
+        activityId: commentDto.activityId,
+        userId: user.id
+      })
+      return comment
+    } else {
+      return {
+        message: 'You can not comment this'
+      }
+    }
+  }
+
+  async getForCertify(request: Request, createUserActivityDto: CreateUserActivityDto) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let userActiv = await this.userActivityModel.findOne({ where: {
+      userId: {[Op.contains]:[data['id']],},
+      is_ended: true,
+    }})
+
+    if (userActiv) {
+      return userActiv
+    } else {
+      return {
+        message: 'You can not download this'
+      }
+    }
   }
 
   async updateConfirmedId(createUserActivityDto: CreateUserActivityDto,updateUserActivityDto: UpdateUserActivityDto, request: Request):Promise<any> {

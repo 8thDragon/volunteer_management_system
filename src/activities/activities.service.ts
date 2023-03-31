@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response, Request, Express } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { CheckUserDto } from 'src/users/dto/check-user.dto';
+import { CommentDto } from './dto/commnet.dto';
 
 @Injectable()
 export class ActivitiesService {
@@ -170,6 +171,12 @@ export class ActivitiesService {
         message: 'This user activity is not exist or You are not admin'
       }
     }
+  }
+
+  async postComment(commentDto: CommentDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let user = await this.userModel.findByPk(data['id'])
   }
 
   async uploadPdf(data: Buffer): Promise<any> {

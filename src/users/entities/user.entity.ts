@@ -4,6 +4,7 @@ import { Activity } from "src/activities/entities/activity.entity";
 import { UserActivity } from "src/user-activities/entities/user-activity.entity";
 import cryptoRandomString from "crypto-random-string";
 import { v4 as uuidv4 } from 'uuid'
+import { Comment } from "src/activities/entities/comment.entity";
 // import * as nodemailer from 'nodemailer'
 
 // declare function require(name:string);
@@ -32,6 +33,7 @@ export interface userAttributes {
     emailVerified?: boolean;
     email?: string;
     password?: string;
+    comments?: Comment;
     activities?: Activity[];
 }
 
@@ -104,6 +106,13 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Column({ allowNull: false, type: DataType.STRING(255) })
     @Exclude()
     password?: string;
+
+    @HasMany(() => Comment, {
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+      hooks: true
+    })
+    comments?: Comment;
 
     // @BelongsToMany(() => Activity, () => UserActivity)
     // activities?: Activity[];

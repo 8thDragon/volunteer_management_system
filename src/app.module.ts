@@ -12,7 +12,6 @@ import { UserActivity } from './user-activities/entities/user-activity.entity';
 import { AdminsModule } from './admins/admins.module';
 import { AppGateway } from './users/users.gateway';
 import { TestModule } from './test/test.module';
-import { UserActivitiesConfirmedModule } from './user-activities-confirmed/user-activities-confirmed.module';
 import { Admin } from './admins/entities/admin.entity';
 // import { PdfFile } from './activities/entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
@@ -21,6 +20,7 @@ import { MulterModule } from '@nestjs/platform-express';
 // import { SocketModule } from './socket/socket.module';
 import { JwtModule } from '@nestjs/jwt';
 import { File } from './activities/entities/file.entity';
+import { Comment } from './activities/entities/comment.entity';
 
 @Module({
   imports: [
@@ -43,6 +43,7 @@ import { File } from './activities/entities/file.entity';
           // PdfFile,
           UserActivity,
           File,
+          Comment,
         ],
       }),
       inject: [ConfigService],
@@ -58,6 +59,7 @@ import { File } from './activities/entities/file.entity';
       Admin,
       UserActivity,
       File,
+      Comment,
       // PdfFile
     ]),
   UsersModule,
@@ -71,7 +73,6 @@ import { File } from './activities/entities/file.entity';
   UserActivitiesModule,
   AdminsModule,
   TestModule,
-  UserActivitiesConfirmedModule,
   // SocketModule
 ],
   providers: [AppService,AppGateway, 

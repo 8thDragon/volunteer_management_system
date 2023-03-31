@@ -11,6 +11,7 @@ import { Admin } from './entities/admin.entity';
 // import { PdfFile } from 'src/activities/entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { File } from 'src/activities/entities/file.entity';
+import { Comment } from 'src/activities/entities/comment.entity';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { File } from 'src/activities/entities/file.entity';
           Admin,
           UserActivity,
           File,
+          Comment,
           // PdfFile
         ],
       }),
@@ -44,6 +46,7 @@ import { File } from 'src/activities/entities/file.entity';
       Admin,
       UserActivity,
       File,
+      Comment,
       // PdfFile
     ]),
     JwtModule.register({

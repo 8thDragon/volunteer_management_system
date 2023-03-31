@@ -1,4 +1,5 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table, BelongsToMany, HasMany, HasOne } from "sequelize-typescript";
+import { Comment } from "./comment.entity";
 import { UserActivity } from "src/user-activities/entities/user-activity.entity";
 import { User } from "src/users/entities/user.entity";
 import { File } from "./file.entity";
@@ -24,8 +25,10 @@ export interface activityAttributes {
     is_open?: boolean;
     picture?: string;
     priority?: number;
+    rate?: number;
     files?: File[];
     userActivities?: UserActivity[];
+    comments?: Comment;
 }
 
 @Table({ tableName: "activities", timestamps: true })
@@ -88,6 +91,9 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
     @Column({ })
     priority?: number;
 
+    @Column({ })
+    rate?: number;
+
     @HasMany(() => UserActivity, {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
@@ -101,6 +107,13 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
         hooks: true
     })
     files?: File[];
+
+    @HasMany(() => Comment, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+    })
+    comments?: Comment;
 
     // @HasMany(() => PdfFile, {
     //     onUpdate: "CASCADE",

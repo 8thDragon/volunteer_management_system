@@ -10,6 +10,7 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
 import { MulterModule } from '@nestjs/platform-express';
 import { File } from './entities/file.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { Comment } from './entities/comment.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { JwtModule } from '@nestjs/jwt';
           // PdfFile,
           UserActivity,
           File,
+          Comment,
         ],
       }),
       inject: [ConfigService],
@@ -42,6 +44,7 @@ import { JwtModule } from '@nestjs/jwt';
       // PdfFile,
       UserActivity,
       File,
+      Comment,
     ]),
     JwtModule.register({
       secret: 'secret',

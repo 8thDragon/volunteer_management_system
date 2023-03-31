@@ -19,6 +19,7 @@ import { AppGateway } from './users.gateway';
 import { REQUEST } from '@nestjs/core';
 import { ConnectedSocket } from '@nestjs/websockets/decorators/connected-socket.decorator';
 import { Socket } from 'socket.io';
+import { CommentDto } from 'src/activities/dto/commnet.dto';
 const { Op } = require("sequelize");
 
 interface MessageEvent {
@@ -49,6 +50,12 @@ export class UsersController {
   //   return this.usersService.getUserByEmail(loginUserDTo)
   // }
 
+  @Post('post_comment')
+  async postComment(@Body() commentDto: CommentDto,
+                    @Req() request: Request) {
+    return this.usersService.postComment(commentDto,request)
+  }
+
   @Post('login')
   async login(@Body() loginUserDTo : LoginUserDto,
               @Res({passthrough: true}) response : Response) {
@@ -68,6 +75,12 @@ export class UsersController {
   @Get('activities')
   async activities() {
     return this.usersService.getActivities()
+  }
+
+  @Get('certify')
+  async getForCertify(@Req() request: Request,
+                      @Body() createUserActivityDto: CreateUserActivityDto) {
+    return this.usersService.getForCertify(request,createUserActivityDto)
   }
 
   @Get('res')

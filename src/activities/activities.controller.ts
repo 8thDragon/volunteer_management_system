@@ -20,6 +20,7 @@ import { UserActivity } from 'src/user-activities/entities/user-activity.entity'
 import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activity.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { CheckUserDto } from 'src/users/dto/check-user.dto';
+import { CommentDto } from './dto/commnet.dto';
 // import { PdfFile } from './entities/pdfFile.entity';
 
 @Controller('activities')
@@ -67,6 +68,12 @@ export class ActivitiesController {
     console.log(file.buffer)
     const pdf = await this.activitiesService.uploadPdf(file.buffer);
     return { id: pdf.id };
+  }
+
+  @Post('post_comment')
+  async postComment(@Body() commentDto: CommentDto,
+                    @Req() request: Request) {
+    return this.activitiesService.postComment(commentDto,request)
   }
 
   // @Post('uploads')
