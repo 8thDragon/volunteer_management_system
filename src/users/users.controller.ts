@@ -77,7 +77,7 @@ export class UsersController {
     return this.usersService.getActivities()
   }
 
-  @Get('certify')
+  @Post('certify')
   async getForCertify(@Req() request: Request,
                       @Body() createUserActivityDto: CreateUserActivityDto) {
     return this.usersService.getForCertify(request,createUserActivityDto)

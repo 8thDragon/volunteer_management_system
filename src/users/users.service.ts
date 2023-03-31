@@ -181,6 +181,7 @@ export class UsersService {
     let userActiv = await this.userActivityModel.findOne({ where: {
       userId: {[Op.contains]:[data['id']],},
       is_ended: true,
+      id: createUserActivityDto.id
     }})
 
     if (userActiv) {
