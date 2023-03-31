@@ -160,7 +160,7 @@ export class User extends Model<userAttributes, userAttributes> implements userA
         subject: 'Reset your password',
         text: 'Please click the following link to reset your password:',
         html: `<p>Please click the following link to verify your email address:</p>
-        <a href="http://example.com/reset-password?token=${this.passwordResetToken}">Reset password</a>`
+        <a href="http://localhost:4200/confirm-password?token=${this.passwordResetToken}">Reset password</a>`
       });
   
       console.log(`Password reset email sent: ${info.messageId}`);
