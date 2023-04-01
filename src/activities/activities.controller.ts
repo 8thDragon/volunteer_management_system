@@ -76,6 +76,16 @@ export class ActivitiesController {
     return this.activitiesService.postComment(commentDto,request)
   }
 
+  @Get('get_all_comment')
+  async getAllComment() {
+    return this.activitiesService.getAllComment()
+  }
+
+  @Post('get_comment')
+  async getComment(@Body() updateActivityDto: UpdateActivityDto) {
+    return this.activitiesService.getComment(updateActivityDto)
+  }
+
   // @Post('uploads')
   // @UseInterceptors(FileInterceptor('pdfFile'))
   // async uploadFile(@UploadedFile() file) {

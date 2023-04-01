@@ -14,6 +14,7 @@ import { Response, Request, Express } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { CheckUserDto } from 'src/users/dto/check-user.dto';
 import { CommentDto } from './dto/commnet.dto';
+import { Comment } from './entities/comment.entity';
 
 @Injectable()
 export class ActivitiesService {
@@ -24,6 +25,8 @@ export class ActivitiesService {
     private activityModel: typeof Activity,
     @InjectModel(UserActivity)
     private userActivityModel: typeof UserActivity,
+    @InjectModel(Comment)
+    private commentModel: typeof Comment,
     private jwtService: JwtService,
     // @InjectModel(PdfFile)
     // private pdfFileModel: typeof PdfFile,
@@ -177,6 +180,18 @@ export class ActivitiesService {
     const cookie = request.cookies['jwt']
     const data = await this.jwtService.verifyAsync(cookie)
     let user = await this.userModel.findByPk(data['id'])
+  }
+
+  async getAllComment() {
+    let comment = await this.commentModel.findAll()
+    return comment
+  }
+
+  async getComment(updateActivityDto: UpdateActivityDto) {
+    let comment = await this.commentModel.findAll({ where: {
+      id: updateActivityDto.id
+    }})
+    return comment
   }
 
   async uploadPdf(data: Buffer): Promise<any> {
