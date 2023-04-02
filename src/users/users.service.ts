@@ -125,7 +125,7 @@ export class UsersService {
       if (user.non_blacklist == true) {
         if (created) {
           console.log('create')
-          userActiv.update({userId: [data['id']]})
+          userActiv.update({userId: [data['id']], picture_activity: activity.picture})
           response.success = true
           response.result = userActiv
         } else if (activity.size_number >= userActiv.userId.length){
@@ -227,6 +227,8 @@ export class UsersService {
         let act_date = userActiv.date
         let act_date_gen = new Date(act_date)
         act_date_gen.setDate(act_date_gen.getDate() - 1)
+        console.log(date_now)
+        console.log(act_date_gen)
         let date_check = date_now < act_date_gen
         if (userActiv && !userActiv.is_started && (date_check)) {
           let new_uID = userActiv.userId.filter((new_id) => new_id !== data['id'])
