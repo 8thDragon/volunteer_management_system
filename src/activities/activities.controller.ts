@@ -21,6 +21,10 @@ import { UpdateUserActivityDto } from 'src/user-activities/dto/update-user-activ
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { CheckUserDto } from 'src/users/dto/check-user.dto';
 import { CommentDto } from './dto/commnet.dto';
+import { LoginUserDto } from 'src/users/dto/login-user.dto';
+import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
+import { RemoveUserDto } from 'src/users/dto/remove-user.dto';
+import { CheckUserActivityDto } from 'src/user-activities/dto/check-user-activity.dto';
 // import { PdfFile } from './entities/pdfFile.entity';
 
 @Controller('activities')
@@ -84,6 +88,19 @@ export class ActivitiesController {
   @Post('get_comment')
   async getComment(@Body() updateActivityDto: UpdateActivityDto) {
     return this.activitiesService.getComment(updateActivityDto)
+  }
+
+  @Post('get_user_in_userAc')
+  async getUserInUserActivity(@Body() updateUserActivityDto: UpdateUserActivityDto,
+                              @Req() request: Request) {
+    return this.activitiesService.getUserInUserActivity(updateUserActivityDto,request)
+  }
+
+  @Patch('remove_user_from_useractivity')
+  async removeUserFromUserActivity(@Body() removeUserDto: RemoveUserDto,
+                                  @Req() request: Request
+                                  ) {
+    return this.activitiesService.removeUserFromUserActivity(removeUserDto,request)
   }
 
   // @Post('uploads')

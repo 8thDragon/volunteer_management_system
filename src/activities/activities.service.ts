@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { Activity } from './entities/activity.entity';
@@ -15,6 +15,10 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { CheckUserDto } from 'src/users/dto/check-user.dto';
 import { CommentDto } from './dto/commnet.dto';
 import { Comment } from './entities/comment.entity';
+import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
+import { LoginUserDto } from 'src/users/dto/login-user.dto';
+import { RemoveUserDto } from 'src/users/dto/remove-user.dto';
+import { CheckUserActivityDto } from 'src/user-activities/dto/check-user-activity.dto';
 
 @Injectable()
 export class ActivitiesService {
@@ -172,6 +176,43 @@ export class ActivitiesService {
     } else {
       return {
         message: 'This user activity is not exist or You are not admin'
+      }
+    }
+  }
+
+  async getUserInUserActivity(updateUserActivityDto: UpdateUserActivityDto, request: Request):Promise<any> {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let admin = await this.userModel.findByPk(data['id'])
+    if (admin.admin == true) {
+      console.log('test')
+      let userActiv = await this.userActivityModel.findByPk(updateUserActivityDto.id)
+      if(userActiv) {
+        let all_user = []
+        for (let userId of userActiv.userId) {
+          let user = await this.userModel.findByPk(userId)
+          all_user.push(user)
+        }
+        return all_user
+      }
+    }
+  }
+
+  async removeUserFromUserActivity(removeUserDto: RemoveUserDto, request: Request) {
+    const cookie = request.cookies['jwt']
+    const data = await this.jwtService.verifyAsync(cookie)
+    let admin = await this.userModel.findByPk(data['id'])
+    let userActiv = await this.userActivityModel.findOne({where: {
+      id: removeUserDto.userActivityId
+    }})
+    if (userActiv && admin.admin == true) {
+      console.log(userActiv.userId)
+      let new_uID = userActiv.userId.filter((new_id) => new_id !== removeUserDto.userId)
+      await userActiv.update({userId: new_uID})
+      return userActiv
+    } else {
+      return {
+        message: 'errors'
       }
     }
   }
