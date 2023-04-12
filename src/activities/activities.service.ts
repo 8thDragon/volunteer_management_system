@@ -60,12 +60,30 @@ export class ActivitiesService {
     }
   }
 
+  async getLatedActivity(createUserActivityDto: CreateUserActivityDto) {
+    let userActiv = this.userActivityModel.findAll({where: {
+      is_ended: false,
+    },
+    order: [['date','ASC']],
+    })
+    return userActiv
+  }
+
+  async getLatedActivityEnded(createUserActivityDto: CreateUserActivityDto) {
+    let userActiv = this.userActivityModel.findAll({where: {
+      is_ended: true,
+    },
+    order: [['date','DESC']],
+    })
+    return userActiv
+  }
+
   async getAllUsersForUser() {
       let user = await this.userModel.findAll({where: {
         admin: false
       },
       order: [['received_hours','DESC']],
-      limit: 10
+      limit: 5
       })
       return user
   }

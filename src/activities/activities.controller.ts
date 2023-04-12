@@ -130,6 +130,16 @@ export class ActivitiesController {
     return this.activitiesService.getAllUsers(request,createUserDto)
   }
 
+  @Get('get_lated_activity')
+  async getLatedActivity(@Body() createUserActivityDto: CreateUserActivityDto){
+    return this.activitiesService.getLatedActivity(createUserActivityDto)
+  }
+
+  @Get('get_lated_activity_ended')
+  async getLatedActivityEnded(@Body() createUserActivityDto: CreateUserActivityDto){
+    return this.activitiesService.getLatedActivityEnded(createUserActivityDto)
+  }
+
   @Patch('update_blacklist')
   async updateBlacklist(@Body() checkUserDto: CheckUserDto,
                         @Req() request: Request) {
