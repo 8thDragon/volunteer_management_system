@@ -11,6 +11,7 @@ export interface userActivityAttributes {
     activityId?: number;
     activities: Activity;
     date?: Date;
+    is_started?: boolean;
     is_ended?: boolean;
     canceled?: boolean;
 }

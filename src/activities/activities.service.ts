@@ -19,6 +19,8 @@ import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activ
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { RemoveUserDto } from 'src/users/dto/remove-user.dto';
 import { CheckUserActivityDto } from 'src/user-activities/dto/check-user-activity.dto';
+import { Cron } from '@nestjs/schedule';
+const { Op } = require("sequelize");
 
 @Injectable()
 export class ActivitiesService {
@@ -101,6 +103,31 @@ export class ActivitiesService {
     } else {
       return {
         message: 'You are not admin'
+      }
+    }
+  }
+
+  async startActivity() {
+    console.log('test_startActivity')
+    let date_now = new Date()
+    let date_check = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+    console.log(date_now)
+    console.log(date_check)
+    let userActiv_not_start = await this.userActivityModel.findAll({where:{
+      is_started: false
+    }})
+    
+    let all_user_ac = (await userActiv_not_start).length
+    for (let i = 0; i < all_user_ac; i++) {
+      let userActiv = await this.userActivityModel.findOne({where:{
+        is_started: false,
+        date: {
+          [Op.gte]: new Date(),
+          [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+        }
+      }})
+      if (userActiv) {
+        (await userActiv).update({is_started: true})
       }
     }
   }

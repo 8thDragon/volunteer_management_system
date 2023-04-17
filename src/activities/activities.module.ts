@@ -11,9 +11,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { File } from './entities/file.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Comment } from './entities/comment.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

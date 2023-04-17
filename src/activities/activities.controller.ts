@@ -25,6 +25,8 @@ import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { CreateUserActivityDto } from 'src/user-activities/dto/create-user-activity.dto';
 import { RemoveUserDto } from 'src/users/dto/remove-user.dto';
 import { CheckUserActivityDto } from 'src/user-activities/dto/check-user-activity.dto';
+import { CronJob } from 'cron';
+import { Cron, Interval } from '@nestjs/schedule';
 // import { PdfFile } from './entities/pdfFile.entity';
 
 @Controller('activities')
@@ -34,7 +36,9 @@ export class ActivitiesController {
               private fileUpload: typeof File,
               @InjectModel(UserActivity) 
               private userActivity: typeof UserActivity,
-              ) {}
+              ) {
+                // new CronJob('* 6 16 * * *', this.activitiesService.startActivity).start();
+              }
 
   @Post('createActivity')
   async createActivity(@Body() createActivityDto : CreateActivityDto,
@@ -144,6 +148,13 @@ export class ActivitiesController {
   async updateBlacklist(@Body() checkUserDto: CheckUserDto,
                         @Req() request: Request) {
     return this.activitiesService.updateBlacklist(checkUserDto,request)
+  }
+
+  // @Patch('start_activity')
+  // @Interval(10000)
+  @Cron('* * * * * *')
+  async startActivity() {
+    return this.activitiesService.startActivity()
   }
 
   @Get('get_user_for_competition')
