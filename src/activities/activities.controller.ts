@@ -158,8 +158,8 @@ export class ActivitiesController {
   }
 
   @Get('wait_to_start')
-  async waitToStratActivity() {
-    return this.activitiesService.waitToStratActivity()
+  async waitToStartActivity() {
+    return this.activitiesService.waitToStartActivity()
   }
 
   @Get('ongoing_activity')
