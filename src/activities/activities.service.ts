@@ -129,7 +129,7 @@ export class ActivitiesService {
     }
   }
 
-  async waitToStratActivity() {
+  async waitToStartActivity() {
     let userActiv = this.userActivityModel.findAll({where:{
       is_started: false,
       is_ended: false
