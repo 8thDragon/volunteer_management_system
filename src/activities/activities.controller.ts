@@ -152,9 +152,24 @@ export class ActivitiesController {
 
   // @Patch('start_activity')
   // @Interval(10000)
-  @Cron('* * * * * *')
+  @Cron('1,11,21,31,41,51 * * * * *')
   async startActivity() {
     return this.activitiesService.startActivity()
+  }
+
+  @Get('wait_to_start')
+  async waitToStratActivity() {
+    return this.activitiesService.waitToStratActivity()
+  }
+
+  @Get('ongoing_activity')
+  async ongoingActivity() {
+    return this.activitiesService.ongoingActivity()
+  }
+
+  @Get('ended_activity')
+  async endedActivity() {
+    return this.activitiesService.endedActivity()
   }
 
   @Get('get_user_for_competition')

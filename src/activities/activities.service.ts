@@ -108,28 +108,49 @@ export class ActivitiesService {
   }
 
   async startActivity() {
-    console.log('test_startActivity')
-    let date_now = new Date()
-    let date_check = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-    console.log(date_now)
+    let date_now = new Date(new Date().getTime() + 7 * 60 * 60 * 1000)
+    let date_check = new Date(new Date().getTime() + 31 * 60 * 60 * 1000)
     console.log(date_check)
     let userActiv_not_start = await this.userActivityModel.findAll({where:{
       is_started: false
     }})
-    
     let all_user_ac = (await userActiv_not_start).length
     for (let i = 0; i < all_user_ac; i++) {
       let userActiv = await this.userActivityModel.findOne({where:{
         is_started: false,
         date: {
-          [Op.gte]: new Date(),
-          [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+          [Op.gte]: date_now,
+          [Op.lt]: date_check
         }
       }})
       if (userActiv) {
         (await userActiv).update({is_started: true})
       }
     }
+  }
+
+  async waitToStratActivity() {
+    let userActiv = this.userActivityModel.findAll({where:{
+      is_started: false,
+      is_ended: false
+    }}) 
+    return userActiv
+  }
+
+  async ongoingActivity() {
+    let userActiv = this.userActivityModel.findAll({where:{
+      is_started: true,
+      is_ended: false
+    }}) 
+    return userActiv
+  }
+
+  async endedActivity() {
+    let userActiv = this.userActivityModel.findAll({where:{
+      is_started: true,
+      is_ended: true
+    }}) 
+    return userActiv
   }
 
   // async updateActivity(id: number, updateActivityDto: UpdateActivityDto): Promise<any> {
