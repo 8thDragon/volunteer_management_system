@@ -133,7 +133,9 @@ export class ActivitiesService {
     let userActiv = this.userActivityModel.findAll({where:{
       is_started: false,
       is_ended: false
-    }}) 
+    },
+    order: [['date','ASC']],
+  }) 
     return userActiv
   }
 
@@ -141,7 +143,9 @@ export class ActivitiesService {
     let userActiv = this.userActivityModel.findAll({where:{
       is_started: true,
       is_ended: false
-    }}) 
+    },
+    order: [['date','ASC']],
+  }) 
     return userActiv
   }
 
@@ -149,7 +153,9 @@ export class ActivitiesService {
     let userActiv = this.userActivityModel.findAll({where:{
       is_started: true,
       is_ended: true
-    }}) 
+    },
+    order: [['date','DESC']],
+  }) 
     return userActiv
   }
 
