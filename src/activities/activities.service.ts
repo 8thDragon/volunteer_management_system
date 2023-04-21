@@ -237,9 +237,6 @@ export class ActivitiesService {
           let user = await this.userModel.findByPk(activity.userId[i])
           let addHours = user.received_hours + ac.received_hours
           await user.update({ received_hours: addHours})
-          return {
-            message: 'User received activity hours'
-          }
         }
       } else {
         return 'You already finish this event.'

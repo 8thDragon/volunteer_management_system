@@ -152,7 +152,7 @@ export class ActivitiesController {
 
   // @Patch('start_activity')
   // @Interval(10000)
-  @Cron('* 0,5,10,15,20,25,30,35,40,45,50,55 * * * *')
+  @Cron('* 5 * * * *')
   async startActivity() {
     return this.activitiesService.startActivity()
   }
