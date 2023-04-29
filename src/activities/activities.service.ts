@@ -134,6 +134,7 @@ export class ActivitiesService {
     let date_check = new Date(new Date().getTime() + 31 * 60 * 60 * 1000)
     console.log(date_now)
     console.log(date_check)
+    let user = []
     let userActiv = await this.userActivityModel.findAll({where: {
       is_started: false,
       date: {
@@ -141,8 +142,13 @@ export class ActivitiesService {
         [Op.lt]: date_check
       }
     }})
+    for (let userac of userActiv) {
+      if (userac.userId.length > 0) {
+        user.push(userac)
+      }
+    }
 
-    return userActiv
+    return user
   }
 
   async waitToStartActivity() {
@@ -271,9 +277,9 @@ export class ActivitiesService {
     let admin = await this.userModel.findByPk(data['id'])
     if (admin.admin == true) {
       console.log('test')
+      let all_user = []
       let userActiv = await this.userActivityModel.findByPk(updateUserActivityDto.id)
       if(userActiv) {
-        let all_user = []
         for (let userId of userActiv.userId) {
           let user = await this.userModel.findByPk(userId)
           all_user.push(user)
