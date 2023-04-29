@@ -149,11 +149,11 @@ export class UsersController {
     return this.usersService.updateUser(updateUserDto, request);
   }
 
-  @SubscribeMessage('events')
-  async handleEventNotification(client: any, request: Request) {
-    console.log('test controller')
-    return this.usersService.handleEventNotification(client, request)
-  }
+  // @SubscribeMessage('events')
+  // async handleEventNotification(client: any, request: Request) {
+  //   console.log('test controller')
+  //   return this.usersService.handleEventNotification(client, request)
+  // }
 
   // @SubscribeMessage('events')
   // async handleEventNotification(client: any, payload: any) {

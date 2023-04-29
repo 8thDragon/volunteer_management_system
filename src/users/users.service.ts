@@ -20,17 +20,46 @@ import { WebSocketServer } from '@nestjs/websockets/decorators/gateway-server.de
 import { SubscribeMessage } from '@nestjs/websockets/decorators/subscribe-message.decorator';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, Query, Sse, ExecutionContext } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { ConnectedSocket } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 import { REQUEST } from '@nestjs/core';
 import { CommentDto } from 'src/activities/dto/commnet.dto';
 import { Comment } from 'src/activities/entities/comment.entity';
+import * as jwt from 'jsonwebtoken';
+import { io } from 'socket.io-client';
+import { AuthGuard } from '@nestjs/passport';
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
 const { Op } = require("sequelize");
 @WebSocketGateway()
 @Injectable()
-export class UsersService {
+export class UsersService implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   @WebSocketServer() server: Server;
+
+  afterInit(server: Server) {
+    console.log('Socket.IO server initialized');
+  }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    console.log(`Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket) {
+    console.log(`Client disconnected: ${client.id}`);
+  }
+
+  notifyClients() {
+    // Get a list of all connected clients
+    const connectedClients = this.server.sockets.sockets;
+
+    // Loop through the connected clients and send a message to each one
+    connectedClients.forEach(client => {
+      if (true) {
+        // If the client is in both 'room1' and 'room2', send them a message
+        client.emit('new-notification', { message: 'New notification!' });
+      }
+    });
+  }
+
   vapidKeys = webpush.generateVAPIDKeys();
   private readonly publicKey = this.vapidKeys.publicKey;
   private readonly privateKey = this.vapidKeys.privateKey;
@@ -314,7 +343,13 @@ export class UsersService {
     let responseC = new ResponseStandard()
     let user = await this.userModel.findOne({where: {email: loginUserDTo.email}})
     const jwt = await this.jwtService.signAsync({id: user.id})
+    console.log(jwt)
     response.cookie('jwt', jwt, {httpOnly: false })
+    const socket = io('http://localhost:3000', {
+      query: {
+        Authorization: `Bearer ${jwt}`,
+      }
+    })
 
     if (!user) {
         responseC.error_code = "400"
@@ -460,40 +495,46 @@ export class UsersService {
   }
 
   @SubscribeMessage('events')
-  async handleEventNotification(client: any, request: Request) {
-    console.log('test')
+  async handleEventNotification(data: any, client: any) {
+    console.log('test+++++++++++++++++++++++++++++++++++++')
+    // console.log(this.jwtService.verify)
+
+    const token = client.handshake.query.Authorization.split(' ')[1];
+
+    console.log(token)
+
     // const request = context.switchToHttp().getRequest();
-    const cookie = request.cookies['jwt']
+    // const cookie = request.cookies['jwt']
     // const cookie = this.request.cookies['jwt']
     // const cookie1 = this.getUserToken(request)
     // console.log(cookie1)
 
-    console.log(cookie)
-    if(cookie) {
-      console.log('test')
-      const dataUser = await this.jwtService.verifyAsync(cookie)
-      if (dataUser['id']) {
-        const events = await this.userActivity.findAll({
-          where: {
-            userId: {[Op.contains]:[dataUser['id']],},
-            date: {
-              [Op.gte]: new Date(),
-              [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-            },
-            canceled: false,
-          },
-        });
-        let test1 = new Date()
-        let test = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-        console.log(test1)
-        console.log(test)
+    // console.log(cookie)
+    // if(cookie) {
+    //   console.log('test')
+    //   const dataUser = await this.jwtService.verifyAsync(cookie)
+    //   if (dataUser['id']) {
+    //     const events = await this.userActivity.findAll({
+    //       where: {
+    //         userId: {[Op.contains]:[dataUser['id']],},
+    //         date: {
+    //           [Op.gte]: new Date(),
+    //           [Op.lt]: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+    //         },
+    //         canceled: false,
+    //       },
+    //     });
+    //     let test1 = new Date()
+    //     let test = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+    //     console.log(test1)
+    //     console.log(test)
       
 
-        for (const event of events) {
-          client.emit('event', event.toJSON());
-        }
-      }
-    }
+    //     for (const event of events) {
+    //       client.emit('event', event.toJSON());
+    //     }
+    //   }
+    // }
   }
 
 }

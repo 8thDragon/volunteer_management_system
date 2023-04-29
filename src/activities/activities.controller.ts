@@ -152,9 +152,14 @@ export class ActivitiesController {
 
   // @Patch('start_activity')
   // @Interval(10000)
-  @Cron('* 5 * * * *')
+  @Cron('5 5 * * * *')
   async startActivity() {
     return this.activitiesService.startActivity()
+  }
+
+  @Get('get_useractivity_for_notification')
+  async getUserAcForNotify() {
+    return this.activitiesService.getUserAcForNotify()
   }
 
   @Get('wait_to_start')
