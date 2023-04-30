@@ -129,6 +129,11 @@ export class ActivitiesService {
     }
   }
 
+  async getUserActivityById(updateUserActivityDto: UpdateUserActivityDto) {
+    let userActiv = this.userActivityModel.findByPk(updateUserActivityDto.id)
+    return userActiv
+  }
+
   async getUserAcForNotify() {
     let date_now = new Date(new Date().getTime() + 7 * 60 * 60 * 1000)
     let date_check = new Date(new Date().getTime() + 31 * 60 * 60 * 1000)

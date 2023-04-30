@@ -157,6 +157,11 @@ export class ActivitiesController {
     return this.activitiesService.startActivity()
   }
 
+  @Get('get_useractivity_by_id')
+  async getUserActivityById(@Body() updateUserActivityDto: UpdateUserActivityDto) {
+    return this.activitiesService.getUserActivityById(updateUserActivityDto)
+  }
+
   @Get('get_useractivity_for_notification')
   async getUserAcForNotify() {
     return this.activitiesService.getUserAcForNotify()
