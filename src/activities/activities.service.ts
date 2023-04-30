@@ -139,7 +139,7 @@ export class ActivitiesService {
       is_started: false,
       date: {
         [Op.gte]: date_now,
-        [Op.lt]: date_check
+        [Op.lte]: date_check
       }
     }})
     for (let userac of userActiv) {
