@@ -157,7 +157,7 @@ export class ActivitiesController {
     return this.activitiesService.startActivity()
   }
 
-  @Get('get_useractivity_by_id')
+  @Post('get_useractivity_by_id')
   async getUserActivityById(@Body() updateUserActivityDto: UpdateUserActivityDto) {
     return this.activitiesService.getUserActivityById(updateUserActivityDto)
   }
