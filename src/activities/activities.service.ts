@@ -143,7 +143,7 @@ export class ActivitiesService {
     let userActiv = await this.userActivityModel.findAll({where: {
       is_started: false,
       date: {
-        [Op.gt]: date_now,
+        [Op.gte]: date_now,
         [Op.lte]: date_check
       }
     }})
