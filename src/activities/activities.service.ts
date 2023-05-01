@@ -149,6 +149,7 @@ export class ActivitiesService {
     }})
     for (let userac of userActiv) {
       if (userac.userId.length > 0) {
+        console.log(userac.date >= date_now)
         user.push(userac)
       }
     }
