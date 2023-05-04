@@ -484,7 +484,7 @@ export class UsersService implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   async getTest() {
-    return this.activityModel.findAll({include: [UserActivity]})
+    return this.userModel.findAll({include: [Notification]})
     // return this.activityModel.findAll({include: [User]})
   }
 

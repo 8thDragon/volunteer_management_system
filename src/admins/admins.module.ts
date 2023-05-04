@@ -12,6 +12,7 @@ import { Admin } from './entities/admin.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { File } from 'src/activities/entities/file.entity';
 import { Comment } from 'src/activities/entities/comment.entity';
+import { Notification } from 'src/users/entities/notify.entity';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { Comment } from 'src/activities/entities/comment.entity';
           File,
           Comment,
           // PdfFile
+          Notification,
         ],
       }),
       inject: [ConfigService],
@@ -48,6 +50,7 @@ import { Comment } from 'src/activities/entities/comment.entity';
       File,
       Comment,
       // PdfFile
+      Notification,
     ]),
     JwtModule.register({
       secret: 'secret',

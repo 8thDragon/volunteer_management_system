@@ -3,6 +3,7 @@ import { Comment } from "./comment.entity";
 import { UserActivity } from "src/user-activities/entities/user-activity.entity";
 import { User } from "src/users/entities/user.entity";
 import { File } from "./file.entity";
+import { Notification } from "src/users/entities/notify.entity";
 // import { PdfFile } from "./pdfFile.entity";
 
 export interface activityAttributes {
@@ -29,6 +30,7 @@ export interface activityAttributes {
     files?: File[];
     userActivities?: UserActivity[];
     comments?: Comment;
+    notify?: Notification;
 }
 
 @Table({ tableName: "activities", timestamps: true })
@@ -114,6 +116,13 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
         hooks: true
     })
     comments?: Comment;
+
+    @HasMany(() => Notification, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+      })
+      notify?: Notification;
 
     // @HasMany(() => PdfFile, {
     //     onUpdate: "CASCADE",

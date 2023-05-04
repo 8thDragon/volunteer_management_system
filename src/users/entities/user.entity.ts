@@ -5,6 +5,7 @@ import { UserActivity } from "src/user-activities/entities/user-activity.entity"
 import cryptoRandomString from "crypto-random-string";
 import { v4 as uuidv4 } from 'uuid'
 import { Comment } from "src/activities/entities/comment.entity";
+import { Notification } from "./notify.entity";
 // import * as nodemailer from 'nodemailer'
 
 // declare function require(name:string);
@@ -34,6 +35,7 @@ export interface userAttributes {
     email?: string;
     password?: string;
     comments?: Comment;
+    notify?: Notification;
     activities?: Activity[];
 }
 
@@ -113,6 +115,13 @@ export class User extends Model<userAttributes, userAttributes> implements userA
       hooks: true
     })
     comments?: Comment;
+
+    @HasMany(() => Notification, {
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+      hooks: true
+    })
+    notify?: Notification;
 
     // @BelongsToMany(() => Activity, () => UserActivity)
     // activities?: Activity[];
