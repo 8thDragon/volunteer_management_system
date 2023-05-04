@@ -27,6 +27,7 @@ import { RemoveUserDto } from 'src/users/dto/remove-user.dto';
 import { CheckUserActivityDto } from 'src/user-activities/dto/check-user-activity.dto';
 import { CronJob } from 'cron';
 import { Cron, Interval } from '@nestjs/schedule';
+import { NotifyDto } from './dto/notify.dto';
 // import { PdfFile } from './entities/pdfFile.entity';
 
 @Controller('activities')
@@ -165,6 +166,11 @@ export class ActivitiesController {
   @Get('get_useractivity_for_notification')
   async getUserAcForNotify() {
     return this.activitiesService.getUserAcForNotify()
+  }
+
+  @Post('notify_user')
+  async notifyUser(@Body() notifyDto: NotifyDto) {
+    return this.activitiesService.notifyUser(notifyDto)
   }
 
   @Get('wait_to_start')

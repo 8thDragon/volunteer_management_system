@@ -295,8 +295,19 @@ export class ActivitiesService {
     this.notificationModel.create({userId: userId,activityId: activityId,detail: detail,date: date,is_read: is_read})
   }
 
-  async getNotificationo() {
-    // return this.
+  async notifyUser(notifyDto: NotifyDto) {
+    let date_now = new Date(new Date().getTime() + 7 * 60 * 60 * 1000)
+    let date_check = new Date(new Date().getTime() + 55 * 60 * 60 * 1000)
+    console.log(date_check)
+    return this.notificationModel.findAll({where: {
+      userId: notifyDto.userId,
+      date: {
+        [Op.gte]: date_now,
+        [Op.lte]: date_check
+      }
+    },
+    order: [['date','ASC']],
+  })
   }
 
   async getUserInUserActivity(updateUserActivityDto: UpdateUserActivityDto, request: Request):Promise<any> {
