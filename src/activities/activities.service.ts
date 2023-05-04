@@ -20,6 +20,8 @@ import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { RemoveUserDto } from 'src/users/dto/remove-user.dto';
 import { CheckUserActivityDto } from 'src/user-activities/dto/check-user-activity.dto';
 import { Cron } from '@nestjs/schedule';
+import { Notification } from 'src/users/entities/notify.entity';
+import { NotifyDto } from 'src/users/dto/create-notify.dto';
 const { Op } = require("sequelize");
 
 @Injectable()
@@ -33,6 +35,8 @@ export class ActivitiesService {
     private userActivityModel: typeof UserActivity,
     @InjectModel(Comment)
     private commentModel: typeof Comment,
+    @InjectModel(Notification)
+    private notificationModel: typeof Notification,
     private jwtService: JwtService,
     // @InjectModel(PdfFile)
     // private pdfFileModel: typeof PdfFile,
@@ -132,6 +136,10 @@ export class ActivitiesService {
   async getUserActivityById(updateUserActivityDto: UpdateUserActivityDto) {
     let userActiv = this.userActivityModel.findByPk(updateUserActivityDto.id)
     return userActiv
+  }
+
+  async getNotify() {
+
   }
 
   async getUserAcForNotify() {
@@ -265,6 +273,12 @@ export class ActivitiesService {
           let user = await this.userModel.findByPk(activity.userId[i])
           let addHours = user.received_hours + ac.received_hours
           await user.update({ received_hours: addHours})
+          this.createNotifyFromFinishedActivity(
+            activity.userId[i],
+            ac.id,
+            `คุณได้เสร็จสิ้นกิจกรรม ${activity.userActivityName} ในวันที่ ${activity.date} และได้รับชั่วโมงการทำกิจกรรม ${ac.received_hours} ชม. เรียบร้อย สามารถรับเอกสารได้ในประวัติการทำกิจกรรม`,
+            activity.date,
+            false)
         }
       } else {
         return 'You already finish this event.'
@@ -275,6 +289,14 @@ export class ActivitiesService {
         message: 'This user activity is not exist or You are not admin'
       }
     }
+  }
+
+  async createNotifyFromFinishedActivity(userId,activityId,detail,date,is_read) {
+    this.notificationModel.create({userId: userId,activityId: activityId,detail: detail,date: date,is_read: is_read})
+  }
+
+  async getNotificationo() {
+    // return this.
   }
 
   async getUserInUserActivity(updateUserActivityDto: UpdateUserActivityDto, request: Request):Promise<any> {

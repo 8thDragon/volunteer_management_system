@@ -27,6 +27,8 @@ import { Comment } from 'src/activities/entities/comment.entity';
 import * as jwt from 'jsonwebtoken';
 import { io } from 'socket.io-client';
 import { AuthGuard } from '@nestjs/passport';
+import { Notification } from './entities/notify.entity';
+
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
 const { Op } = require("sequelize");
@@ -75,6 +77,8 @@ export class UsersService implements OnGatewayInit, OnGatewayConnection, OnGatew
     private userActivity: typeof UserActivity,
     @InjectModel(Comment)
     private commentModel: typeof Comment,
+    @InjectModel(Notification)
+    private notificationModel: typeof Notification,
     @Inject('REQUEST') private readonly request: Request,
     
 ) {}
@@ -157,11 +161,29 @@ export class UsersService implements OnGatewayInit, OnGatewayConnection, OnGatew
           userActiv.update({userId: [data['id']], picture_activity: activity.picture})
           response.success = true
           response.result = userActiv
+          this.notificationModel.create({
+            userId: data['id'],
+            activityId:activity.id,
+            detail: `คุณมีกิจกรรม ${activity.activity_name} ที่ต้องทำในวันที่ ${createUserActivityDto.date}`,
+            date: createUserActivityDto.date,
+            is_read: false})
         } else if (activity.size_number >= userActiv.userId.length){
           console.log('push')
           if (!(userActiv.userId.includes(data['id']))) {
             let allUser = [...userActiv.userId,data['id']]
             userActiv.update({userId: allUser})
+            this.notificationModel.create({
+              userId: data['id'],
+              detail: `คุณมีกิจกรรม ${activity.activity_name} ที่ต้องทำในวันที่ ${createUserActivityDto.date}`,
+              date: createUserActivityDto.date,
+              is_read: false})
+            return {
+              message: 'Register success'
+            }
+          } else {
+            return {
+              message: 'You already registered to this activity'
+            }
           }
           response.result = userActiv
         } else {
@@ -262,6 +284,14 @@ export class UsersService implements OnGatewayInit, OnGatewayConnection, OnGatew
         if (userActiv && !userActiv.is_started && (date_check)) {
           let new_uID = userActiv.userId.filter((new_id) => new_id !== data['id'])
           await userActiv.update({userId: new_uID})
+          this.notificationModel.destroy({where: {
+            userId: [data['id']],
+            date: createUserActivityDto.date,
+            activityId: createUserActivityDto.activityId
+          }})
+          return {
+            message: "Cancel success"
+          }
         } else {
           throw new BadRequestException('You can not cancel This activity.')
         }

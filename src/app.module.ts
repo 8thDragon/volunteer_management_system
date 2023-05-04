@@ -22,6 +22,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { File } from './activities/entities/file.entity';
 import { Comment } from './activities/entities/comment.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { Notification } from './users/entities/notify.entity';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           UserActivity,
           File,
           Comment,
+          Notification,
         ],
       }),
       inject: [ConfigService],
@@ -62,6 +64,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       UserActivity,
       File,
       Comment,
+      Notification,
       // PdfFile
     ]),
   UsersModule,

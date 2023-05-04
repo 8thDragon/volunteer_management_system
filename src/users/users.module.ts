@@ -11,6 +11,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { AppGateway } from './users.gateway';
 import { File } from 'src/activities/entities/file.entity';
 import { Comment } from 'src/activities/entities/comment.entity';
+import { Notification } from './entities/notify.entity';
 // import { PdfFile } from 'src/activities/entities/pdfFile.entity';
 
 @Module({
@@ -34,6 +35,7 @@ import { Comment } from 'src/activities/entities/comment.entity';
           UserActivity,
           File,
           Comment,
+          Notification,
         ],
       }),
       inject: [ConfigService],
@@ -46,6 +48,7 @@ import { Comment } from 'src/activities/entities/comment.entity';
       UserActivity,
       File,
       Comment,
+      Notification,
     ]),
     JwtModule.register({
       secret: 'secret',
