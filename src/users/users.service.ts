@@ -146,52 +146,70 @@ export class UsersService implements OnGatewayInit, OnGatewayConnection, OnGatew
     let response = new ResponseStandard()
     const cookie = request.cookies['jwt']
     const data = await this.jwtService.verifyAsync(cookie)
+    let activityForDateCheck = this.activityModel.findOne({where:{
+      id: createUserActivityDto.activityId,
+      start_date: {
+        [Op.lte]: createUserActivityDto.date
+      },
+      end_date: {
+        [Op.gte]: createUserActivityDto.date
+      }
+    }})
     if (data['id']) {
-      let activity = await this.activityModel.findByPk(createUserActivityDto.activityId)
-      let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
-        activityId: createUserActivityDto.activityId,
-        userActivityName: activity.activity_name,
-        date: createUserActivityDto.date
+      console.log(createUserActivityDto.date)
+      console.log((await activityForDateCheck).start_date <= createUserActivityDto.date)
+      if (activityForDateCheck) {
+        let activity = await this.activityModel.findByPk(createUserActivityDto.activityId)
+        let [userActiv, created] = await this.userActivityModel.findOrCreate({ where: {
+          activityId: createUserActivityDto.activityId,
+          userActivityName: activity.activity_name,
+          date: createUserActivityDto.date
+          }})
+        let user = await this.userModel.findOne({where: {
+          id: data['id']
         }})
-      let user = await this.userModel.findOne({where: {
-        id: data['id']
-      }})
-      if (user.non_blacklist == true) {
-        if (created) {
-          console.log('create')
-          userActiv.update({userId: [data['id']], picture_activity: activity.picture})
-          response.success = true
-          response.result = userActiv
-          this.notificationModel.create({
-            userId: data['id'],
-            activityId:activity.id,
-            detail: `คุณมีกิจกรรม ${activity.activity_name} ที่ต้องทำในวันที่ ${createUserActivityDto.date}`,
-            date: createUserActivityDto.date,
-            is_read: false})
-        } else if (activity.size_number >= userActiv.userId.length){
-          console.log('push')
-          if (!(userActiv.userId.includes(data['id']))) {
-            let allUser = [...userActiv.userId,data['id']]
-            userActiv.update({userId: allUser})
+        if (user.non_blacklist == true) {
+          if (created) {
+            console.log('create')
+            userActiv.update({userId: [data['id']], picture_activity: activity.picture})
+            response.success = true
+            response.result = userActiv
             this.notificationModel.create({
               userId: data['id'],
+              activityId:activity.id,
               detail: `คุณมีกิจกรรม ${activity.activity_name} ที่ต้องทำในวันที่ ${createUserActivityDto.date}`,
               date: createUserActivityDto.date,
               is_read: false})
-            return {
-              message: 'Register success'
+          } else if (activity.size_number >= userActiv.userId.length){
+            console.log('push')
+            if (!(userActiv.userId.includes(data['id']))) {
+              let allUser = [...userActiv.userId,data['id']]
+              userActiv.update({userId: allUser})
+              this.notificationModel.create({
+                userId: data['id'],
+                detail: `คุณมีกิจกรรม ${activity.activity_name} ที่ต้องทำในวันที่ ${createUserActivityDto.date}`,
+                date: createUserActivityDto.date,
+                is_read: false})
+              return {
+                message: 'Register success'
+              }
+            } else {
+              return {
+                message: 'You already registered to this activity'
+              }
             }
+            response.result = userActiv
           } else {
-            return {
-              message: 'You already registered to this activity'
-            }
+            throw new BadRequestException('This event is full')
           }
-          response.result = userActiv
         } else {
-          throw new BadRequestException('This event is full')
+          throw new BadRequestException('black list')
         }
+
       } else {
-        throw new BadRequestException('black list')
+        return {
+          message: "Date out of range"
+        }
       }
     } else {
       throw new BadRequestException('You are not loging in!!!')

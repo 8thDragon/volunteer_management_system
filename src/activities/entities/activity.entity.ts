@@ -78,10 +78,10 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
     @Column({ allowNull: false })
     map?: string;
 
-    @Column({ allowNull: false })
+    @Column({ allowNull: false, type: DataType.DATEONLY })
     start_date?: Date;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true, type: DataType.DATEONLY })
     end_date?: Date;
 
     @Column({ allowNull: false, defaultValue: false })
