@@ -28,6 +28,7 @@ import * as jwt from 'jsonwebtoken';
 import { io } from 'socket.io-client';
 import { AuthGuard } from '@nestjs/passport';
 import { Notification } from './entities/notify.entity';
+import { NotifyDto } from 'src/activities/dto/notify.dto';
 
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
@@ -299,6 +300,13 @@ export class UsersService implements OnGatewayInit, OnGatewayConnection, OnGatew
       } else {
         throw new BadRequestException('You are not registered to this activity.')
       }
+    }
+  }
+
+  async readNotify(notifyDto: NotifyDto) {
+    let notify = await this.notificationModel.findByPk(notifyDto.id)
+    if (notify && notify.is_read != true) {
+      await notify.update({is_read: true})
     }
   }
 

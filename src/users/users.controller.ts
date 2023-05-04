@@ -20,6 +20,7 @@ import { REQUEST } from '@nestjs/core';
 import { ConnectedSocket } from '@nestjs/websockets/decorators/connected-socket.decorator';
 import { Socket } from 'socket.io';
 import { CommentDto } from 'src/activities/dto/commnet.dto';
+import { NotifyDto } from 'src/activities/dto/notify.dto';
 const { Op } = require("sequelize");
 
 interface MessageEvent {
@@ -134,6 +135,11 @@ export class UsersController {
   @Get('get-open-activity')
   async getOpenActivities(){
     return this.usersService.getOpenActivities()
+  }
+
+  @Patch('read_notify')
+  async readNotify(@Body() notifyDto: NotifyDto) {
+    return this.usersService.readNotify(notifyDto)
   }
 
   @Patch('cancel_activity')
