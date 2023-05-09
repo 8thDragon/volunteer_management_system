@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   NotFoundException,
@@ -54,6 +56,7 @@ import { io } from 'socket.io-client';
 import { AuthGuard } from '@nestjs/passport';
 import { Notification } from './entities/notify.entity';
 import { NotifyDto } from 'src/activities/dto/notify.dto';
+import { throwError } from 'rxjs';
 
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
@@ -148,9 +151,7 @@ export class UsersService
       //   response.result = user;
       // }
     } else {
-      return {
-        message: "This e-mail is already used"
-      }
+      throw new HttpException('This e-mail is already used', HttpStatus.BAD_REQUEST);
     }
     return {
       message: "Registered success"
