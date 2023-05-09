@@ -155,6 +155,11 @@ export class UsersController {
     return this.usersService.updateUser(updateUserDto, request);
   }
 
+  @Post('check_email')
+  checkEmail(@Body() loginUserDTo: LoginUserDto) {
+    return this.usersService.checkEmail(loginUserDTo)
+  }
+
   // @SubscribeMessage('events')
   // async handleEventNotification(client: any, request: Request) {
   //   console.log('test controller')
