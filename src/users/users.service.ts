@@ -133,29 +133,42 @@ export class UsersService
         email: createUserDto.email,
       },
     });
-    if (!userCheckEmail) {
-      const passwordHash = await bcrypt.hash(createUserDto.password, 12);
-      createUserDto.password = passwordHash;
-      let user = await this.userModel.create({ ...createUserDto });
-      let userTest = JSON.parse(JSON.stringify(user));
-      const { password, ...result } = userTest;
-      user.generateEmailVerificationToken();
-      await user.save();
-      await user.sendVerificationEmail();
-      // if (!user) {
-      //   return {
-      //     message: 'This e-mail is already used',
-      //   };
-      // } else {
-      //   response.success = true;
-      //   response.result = user;
-      // }
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    console.log('test11111111111111111111111111');
+    if (regex.test(createUserDto.email)) {
+      if (!userCheckEmail) {
+        console.log('test2222222222222222222222222222');
+        const passwordHash = await bcrypt.hash(createUserDto.password, 12);
+        createUserDto.password = passwordHash;
+        let user = await this.userModel.create({ ...createUserDto });
+        let userTest = JSON.parse(JSON.stringify(user));
+        const { password, ...result } = userTest;
+        user.generateEmailVerificationToken();
+        await user.save();
+        await user.sendVerificationEmail();
+        // if (!user) {
+        //   return {
+        //     message: 'This e-mail is already used',
+        //   };
+        // } else {
+        //   response.success = true;
+        //   response.result = user;
+        // }
+      } else {
+        throw new HttpException(
+          'This e-mail is already used',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     } else {
-      throw new HttpException('This e-mail is already used', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Wrong email format',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return {
-      message: "Registered success"
-    }
+      message: 'Registered success',
+    };
   }
 
   // async postUserActivities(createUserActivityDto : CreateUserActivityDto) {
