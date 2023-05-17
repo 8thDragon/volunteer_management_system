@@ -79,11 +79,11 @@ export class ActivitiesController {
     return { id: pdf.id };
   }
 
-  @Post('post_comment')
-  async postComment(@Body() commentDto: CommentDto,
-                    @Req() request: Request) {
-    return this.activitiesService.postComment(commentDto,request)
-  }
+  // @Post('post_comment')
+  // async postComment(@Body() commentDto: CommentDto,
+  //                   @Req() request: Request) {
+  //   return this.activitiesService.postComment(commentDto,request)
+  // }
 
   @Get('get_all_comment')
   async getAllComment() {
@@ -93,6 +93,11 @@ export class ActivitiesController {
   @Post('get_comment')
   async getComment(@Body() updateActivityDto: UpdateActivityDto) {
     return this.activitiesService.getComment(updateActivityDto)
+  }
+
+  @Post('get_commnet_form_UserAc')
+  async getCommentFromUserAc(@Body() commentDto: CommentDto) {
+    return this.activitiesService.getCommentFromUserAc(commentDto)
   }
 
   @Post('get_user_in_userAc')
