@@ -297,6 +297,7 @@ export class UsersService
     let activity = await this.activityModel.findByPk(commentDto.activityId);
     let userActiv = await this.userActivityModel.findOne({
       where: {
+        id: commentDto.userActivityId,
         userId: { [Op.contains]: [data['id']] },
         activityId: commentDto.activityId,
       },
