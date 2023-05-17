@@ -428,7 +428,7 @@ export class ActivitiesService {
       where: {
         activityId: commentDto.activityId,
       },
-      order: [['comment_date', 'ASC']],
+      // order: [['comment_date', 'ASC']],
     });
     return commentUserAc;
   }
