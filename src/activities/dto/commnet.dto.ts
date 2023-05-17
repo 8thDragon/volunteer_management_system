@@ -1,5 +1,6 @@
 export class CommentDto {
     id?: number;
+    user_name?: string;
     activity_name?: string;
     comment_detail?: string;
     activity_date?: Date;

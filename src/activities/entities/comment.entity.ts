@@ -6,6 +6,7 @@ import { Activity } from "./activity.entity";
 export interface commentAttributes {
     id?: number;
     activity_name?: string;
+    user_name?: string;
     comment_detail?: string;
     activity_date?: Date;
     comment_date?: Date;
@@ -21,6 +22,9 @@ export class Comment extends Model<commentAttributes, commentAttributes> impleme
 
     @Column({ allowNull: false, type: DataType.TEXT })
     activity_name?: string;
+
+    @Column({ allowNull: false, type: DataType.TEXT })
+    user_name?: string;
 
     @Column({ allowNull: false, type: DataType.TEXT })
     comment_detail?: string;

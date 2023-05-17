@@ -161,10 +161,7 @@ export class UsersService
         );
       }
     } else {
-      throw new HttpException(
-        'Wrong email format',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Wrong email format', HttpStatus.BAD_REQUEST);
     }
     return {
       message: 'Registered success',
@@ -215,12 +212,19 @@ export class UsersService
         },
       },
     });
+    let date_now = new Date();
+    let user_act_date = createUserActivityDto.date;
+    let act_date_gen = new Date(user_act_date);
+    act_date_gen.setDate(act_date_gen.getDate());
+    console.log(date_now);
+    console.log(act_date_gen);
+    let date_check = date_now < act_date_gen;
     if (data['id']) {
       console.log(createUserActivityDto.date);
       console.log(
         (await activityForDateCheck).start_date <= createUserActivityDto.date,
       );
-      if (activityForDateCheck) {
+      if (activityForDateCheck && date_check) {
         let activity = await this.activityModel.findByPk(
           createUserActivityDto.activityId,
         );
@@ -305,6 +309,7 @@ export class UsersService
     let comment_day = new Date();
     if (user && activity && userActiv && userActiv.is_ended == true) {
       let comment = this.commentModel.create({
+        user_name: user.name,
         activity_name: activity.activity_name,
         comment_detail: commentDto.comment_detail,
         activity_date: userActiv.date,
@@ -389,8 +394,8 @@ export class UsersService
         let act_date = userActiv.date;
         let act_date_gen = new Date(act_date);
         act_date_gen.setDate(act_date_gen.getDate() - 1);
-        console.log(date_now);
-        console.log(act_date_gen);
+        // console.log(date_now);
+        // console.log(act_date_gen);
         let date_check = date_now < act_date_gen;
         if (userActiv && !userActiv.is_started && date_check) {
           let new_uID = userActiv.userId.filter(
