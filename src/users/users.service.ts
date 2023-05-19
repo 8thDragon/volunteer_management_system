@@ -212,6 +212,7 @@ export class UsersService
         },
       },
     });
+
     let date_now = new Date();
     let user_act_date = createUserActivityDto.date;
     let act_date_gen = new Date(user_act_date);
@@ -221,48 +222,44 @@ export class UsersService
     let date_check = date_now < act_date_gen;
     if (data['id']) {
       console.log(createUserActivityDto.date);
-      console.log(
-        (await activityForDateCheck).start_date <= createUserActivityDto.date,
-      );
+      // console.log(
+      //   (await activityForDateCheck).start_date <= createUserActivityDto.date,
+      // );
       if (activityForDateCheck && date_check) {
-        let activity = await this.activityModel.findByPk(
-          createUserActivityDto.activityId,
-        );
-        let [userActiv, created] = await this.userActivityModel.findOrCreate({
-          where: {
-            activityId: createUserActivityDto.activityId,
-            userActivityName: activity.activity_name,
-            date: createUserActivityDto.date,
-          },
-        });
-        let user = await this.userModel.findOne({
-          where: {
-            id: data['id'],
-          },
-        });
-        if (user.non_blacklist == true) {
-          if (created) {
-            console.log('create');
-            userActiv.update({
-              userId: [data['id']],
-              picture_activity: activity.picture,
-            });
-            response.success = true;
-            response.result = userActiv;
-            this.notificationModel.create({
-              userId: data['id'],
-              activityId: activity.id,
-              detail: `คุณมีกิจกรรม ${activity.activity_name} ที่ต้องทำในวันที่ ${createUserActivityDto.date}`,
+        let AnotherUserActivForCheckDate = await this.userActivityModel.findOne(
+          {
+            where: {
+              userId: { [Op.contains]: [data['id']] },
               date: createUserActivityDto.date,
-              is_read: false,
-            });
-          } else if (activity.size_number >= userActiv.userId.length) {
-            console.log('push');
-            if (!userActiv.userId.includes(data['id'])) {
-              let allUser = [...userActiv.userId, data['id']];
-              userActiv.update({ userId: allUser });
+            },
+          },
+        );
+        if (!AnotherUserActivForCheckDate) {
+          let activity = await this.activityModel.findByPk(
+            createUserActivityDto.activityId,
+          );
+          let [userActiv, created] = await this.userActivityModel.findOrCreate({
+            where: {
+              activityId: createUserActivityDto.activityId,
+              userActivityName: activity.activity_name,
+              date: createUserActivityDto.date,
+            },
+          });
+          let user = await this.userModel.findOne({
+            where: {
+              id: data['id'],
+            },
+          });
+          if (user.non_blacklist == true) {
+            if (created) {
+              console.log('create');
+              userActiv.update({
+                userId: [data['id']],
+                picture_activity: activity.picture,
+              });
               this.notificationModel.create({
                 userId: data['id'],
+                activityId: activity.id,
                 detail: `คุณมีกิจกรรม ${activity.activity_name} ที่ต้องทำในวันที่ ${createUserActivityDto.date}`,
                 date: createUserActivityDto.date,
                 is_read: false,
@@ -270,22 +267,43 @@ export class UsersService
               return {
                 message: 'Register success',
               };
+            } else if (activity.size_number >= userActiv.userId.length) {
+              console.log('push');
+              if (
+                !userActiv.userId.includes(data['id']) &&
+                !AnotherUserActivForCheckDate
+              ) {
+                let allUser = [...userActiv.userId, data['id']];
+                userActiv.update({ userId: allUser });
+                this.notificationModel.create({
+                  userId: data['id'],
+                  detail: `คุณมีกิจกรรม ${activity.activity_name} ที่ต้องทำในวันที่ ${createUserActivityDto.date}`,
+                  date: createUserActivityDto.date,
+                  is_read: false,
+                });
+                return {
+                  message: 'Register success',
+                };
+              } else {
+                throw new HttpException(
+                  'You already registered to this activity',
+                  HttpStatus.BAD_REQUEST,
+                );
+              }
             } else {
-              return {
-                message: 'You already registered to this activity',
-              };
+              throw new BadRequestException('This event is full');
             }
-            response.result = userActiv;
           } else {
-            throw new BadRequestException('This event is full');
+            throw new BadRequestException('black list');
           }
         } else {
-          throw new BadRequestException('black list');
+          throw new HttpException(
+            'You already have another activity this day',
+            HttpStatus.BAD_REQUEST,
+          );
         }
       } else {
-        return {
-          message: 'Date out of range',
-        };
+        throw new HttpException('Date out of range', HttpStatus.BAD_REQUEST);
       }
     } else {
       throw new BadRequestException('You are not loging in!!!');
