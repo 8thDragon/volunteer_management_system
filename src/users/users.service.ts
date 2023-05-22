@@ -57,6 +57,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Notification } from './entities/notify.entity';
 import { NotifyDto } from 'src/activities/dto/notify.dto';
 import { throwError } from 'rxjs';
+import { GetOneActivityDto } from './dto/get-one-activity.dto';
 
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
@@ -460,6 +461,7 @@ export class UsersService
         userId: { [Op.contains]: [data['id']] },
         is_ended: false,
       },
+      order: [['date', 'ASC']],
     });
     return userActiv;
   }
@@ -476,8 +478,15 @@ export class UsersService
         userId: { [Op.contains]: [data['id']] },
         is_ended: true,
       },
+      order: [['date', 'DESC']],
     });
     return userActiv;
+  }
+
+  async getOneActivity(getOneActivityDto: GetOneActivityDto) {
+    return this.activityModel.findOne({where: {
+      id: getOneActivityDto.activityId
+    }})
   }
 
   async getUserActivityName(

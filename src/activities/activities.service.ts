@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable , HttpException, HttpStatus} from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { Activity } from './entities/activity.entity';
@@ -48,6 +48,11 @@ export class ActivitiesService {
     if (user && user.admin == true) {
       let activity = await this.activityModel.create({ ...createActivityDto });
       return activity;
+    } else {
+      throw new HttpException(
+        'You are not admin',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

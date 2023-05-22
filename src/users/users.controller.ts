@@ -21,6 +21,7 @@ import { ConnectedSocket } from '@nestjs/websockets/decorators/connected-socket.
 import { Socket } from 'socket.io';
 import { CommentDto } from 'src/activities/dto/commnet.dto';
 import { NotifyDto } from 'src/activities/dto/notify.dto';
+import { GetOneActivityDto } from './dto/get-one-activity.dto';
 const { Op } = require("sequelize");
 
 interface MessageEvent {
@@ -130,6 +131,11 @@ export class UsersController {
   async getEndedUserActivity(@Body() createUserActivityDto: CreateUserActivityDto,
                             @Req() request: Request) {
     return this.usersService.getEndedUserActivity(createUserActivityDto,request)
+  }
+
+  @Post('get_one_activity')
+  async getOneActivity(@Body() getOneActivityDto: GetOneActivityDto) {
+    return this.usersService.getOneActivity(getOneActivityDto)
   }
 
   @Get('get-open-activity')
