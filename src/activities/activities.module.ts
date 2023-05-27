@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { Comment } from './entities/comment.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Notification } from 'src/users/entities/notify.entity';
+import { Rating } from './entities/reting.entity';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { Notification } from 'src/users/entities/notify.entity';
           File,
           Comment,
           Notification,
+          Rating,
         ],
       }),
       inject: [ConfigService],
@@ -50,6 +52,7 @@ import { Notification } from 'src/users/entities/notify.entity';
       File,
       Comment,
       Notification,
+      Rating,
     ]),
     JwtModule.register({
       secret: 'secret',

@@ -22,6 +22,7 @@ import { Socket } from 'socket.io';
 import { CommentDto } from 'src/activities/dto/commnet.dto';
 import { NotifyDto } from 'src/activities/dto/notify.dto';
 import { GetOneActivityDto } from './dto/get-one-activity.dto';
+import { PostRatingsDto } from './dto/post-ratings.dto';
 const { Op } = require("sequelize");
 
 interface MessageEvent {
@@ -108,18 +109,24 @@ export class UsersController {
     return this.usersService.postUserActivities2(createUserActivityDto,checkUserDto,createActivityDto,request);
   }
 
+  @Post('post_ratings')
+  async postRating(@Body() postRatingsDto: PostRatingsDto,
+                  @Req() request: Request,) {
+    return this.usersService.postRating(postRatingsDto,request)
+  }
+
   @Get('get_data_array')
   async GetDataArray(@Body() createUserActivityDto: CreateUserActivityDto,
                     @Req() request: Request) {
     return this.usersService.GetDataArray(createUserActivityDto,request)
   }
 
-  @Patch('update_confirmed_id')
-  async updateConfirmedId(@Body() createUserActivityDto: CreateUserActivityDto,
-                          @Body() updateUserActivityDto: UpdateUserActivityDto,
-                          @Req() request: Request) {
-    return this.usersService.updateConfirmedId(createUserActivityDto, updateUserActivityDto, request)                    
-  }
+  // @Patch('update_confirmed_id')
+  // async updateConfirmedId(@Body() createUserActivityDto: CreateUserActivityDto,
+  //                         @Body() updateUserActivityDto: UpdateUserActivityDto,
+  //                         @Req() request: Request) {
+  //   return this.usersService.updateConfirmedId(createUserActivityDto, updateUserActivityDto, request)                    
+  // }
 
   @Get('get-useractivity')
   async getUserActivity(@Body() createUserActivityDto: CreateUserActivityDto,

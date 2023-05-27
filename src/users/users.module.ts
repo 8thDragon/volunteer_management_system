@@ -12,6 +12,7 @@ import { AppGateway } from './users.gateway';
 import { File } from 'src/activities/entities/file.entity';
 import { Comment } from 'src/activities/entities/comment.entity';
 import { Notification } from './entities/notify.entity';
+import { Rating } from 'src/activities/entities/reting.entity';
 // import { PdfFile } from 'src/activities/entities/pdfFile.entity';
 
 @Module({
@@ -36,6 +37,7 @@ import { Notification } from './entities/notify.entity';
           File,
           Comment,
           Notification,
+          Rating,
         ],
       }),
       inject: [ConfigService],
@@ -49,6 +51,7 @@ import { Notification } from './entities/notify.entity';
       File,
       Comment,
       Notification,
+      Rating,
     ]),
     JwtModule.register({
       secret: 'secret',

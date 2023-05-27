@@ -9,10 +9,8 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './users/entities/user.entity';
 import { Activity } from './activities/entities/activity.entity';
 import { UserActivity } from './user-activities/entities/user-activity.entity';
-import { AdminsModule } from './admins/admins.module';
 import { AppGateway } from './users/users.gateway';
 import { TestModule } from './test/test.module';
-import { Admin } from './admins/entities/admin.entity';
 // import { PdfFile } from './activities/entities/pdfFile.entity';
 import { MulterModule } from '@nestjs/platform-express';
 // import { GatewayModule } from './user-activity/user-activity.module';
@@ -23,6 +21,7 @@ import { File } from './activities/entities/file.entity';
 import { Comment } from './activities/entities/comment.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Notification } from './users/entities/notify.entity';
+import { Rating } from './activities/entities/reting.entity';
 
 @Module({
   imports: [
@@ -42,12 +41,12 @@ import { Notification } from './users/entities/notify.entity';
         models: [
           User, 
           Activity,
-          Admin,
           // PdfFile,
           UserActivity,
           File,
           Comment,
           Notification,
+          Rating,
         ],
       }),
       inject: [ConfigService],
@@ -60,11 +59,11 @@ import { Notification } from './users/entities/notify.entity';
     SequelizeModule.forFeature([
       User, 
       Activity,
-      Admin,
       UserActivity,
       File,
       Comment,
       Notification,
+      Rating,
       // PdfFile
     ]),
   UsersModule,
@@ -76,7 +75,6 @@ import { Notification } from './users/entities/notify.entity';
   }),
   ActivitiesModule,
   UserActivitiesModule,
-  AdminsModule,
   TestModule,
   // SocketModule
 ],

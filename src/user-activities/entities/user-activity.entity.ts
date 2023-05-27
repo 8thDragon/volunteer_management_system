@@ -7,13 +7,14 @@ export interface userActivityAttributes {
     userActivityName?: string;
     picture_activity?: string;
     userId?: number[];
-    userIdConfirmed?: number[];
+    ratedUser?: number[];
     activityId?: number;
     activities: Activity;
     date?: Date;
     is_started?: boolean;
     is_ended?: boolean;
     canceled?: boolean;
+    ratings?: number;
 }
 
 @Table({ tableName: "user_activities", timestamps: true })
@@ -33,7 +34,7 @@ export class UserActivity extends Model<userActivityAttributes, userActivityAttr
     userId?: number[];
 
     @Column({ type: DataType.ARRAY(DataType.INTEGER), defaultValue: Array })
-    userIdConfirmed?: number[];
+    ratedUser?: number[];
 
     @ForeignKey(() => Activity)
     @Column
@@ -57,4 +58,7 @@ export class UserActivity extends Model<userActivityAttributes, userActivityAttr
 
     @Column({allowNull: false, defaultValue: false })
     canceled?: boolean;
+
+    @Column({ defaultValue: 0 })
+    ratings?: number;
 }

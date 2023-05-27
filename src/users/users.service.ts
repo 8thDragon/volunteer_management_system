@@ -58,6 +58,8 @@ import { Notification } from './entities/notify.entity';
 import { NotifyDto } from 'src/activities/dto/notify.dto';
 import { throwError } from 'rxjs';
 import { GetOneActivityDto } from './dto/get-one-activity.dto';
+import { PostRatingsDto } from './dto/post-ratings.dto';
+import { Rating } from 'src/activities/entities/reting.entity';
 
 // import { CreateActivityDto } from './dto/create-activity.dto';
 // import Op from 'sequelize';
@@ -109,6 +111,8 @@ export class UsersService
     private userActivity: typeof UserActivity,
     @InjectModel(Comment)
     private commentModel: typeof Comment,
+    @InjectModel(Rating)
+    private ratingModel: typeof Rating,
     @InjectModel(Notification)
     private notificationModel: typeof Notification,
     @Inject('REQUEST') private readonly request: Request,
@@ -344,6 +348,54 @@ export class UsersService
     }
   }
 
+  async postRating(postRatingsDto: PostRatingsDto, request: Request) {
+    const cookie = request.cookies['jwt'];
+    const data = await this.jwtService.verifyAsync(cookie);
+    let user = await this.userModel.findByPk(data['id']);
+    let userAc = await this.userActivityModel.findOne({
+      where: {
+        userId: { [Op.contains]: [data['id']] },
+        id: postRatingsDto.userActivityId,
+      },
+    });
+    if (userAc) {
+      let [rating_data, created] = await this.ratingModel.findOrCreate({
+        where: {
+          userActivityId: userAc.id,
+          activityId: userAc.activityId,
+          userId: data['id'],
+        },
+      });
+      if (created) {
+        if (postRatingsDto.ratings >= 0 && postRatingsDto.ratings <= 5) {
+          await rating_data.update({ rated_point: postRatingsDto.ratings });
+        } else {
+          throw new BadRequestException('Rating out of range.');
+        }
+      } else {
+        if (postRatingsDto.ratings >= 0 && postRatingsDto.ratings <= 5) {
+          await rating_data.update({ rated_point: postRatingsDto.ratings });
+        } else {
+          throw new BadRequestException('Rating out of range.');
+        }
+      }
+    }
+    let activity = await this.activityModel.findByPk(
+      postRatingsDto.activityId,
+      {
+        include: [Rating],
+      },
+    );
+
+    let rate = activity.ratings.map((rating) => rating.rated_point);
+    let averrageRating =
+      rate.reduce((sum, rated_point) => sum + rated_point, 0) / rate.length;
+
+    // await activity.update({ rating_point: averrageRating})
+    activity.rating_point = averrageRating;
+    await activity.save();
+  }
+
   async getForCertify(
     request: Request,
     createUserActivityDto: CreateUserActivityDto,
@@ -367,28 +419,28 @@ export class UsersService
     }
   }
 
-  async updateConfirmedId(
-    createUserActivityDto: CreateUserActivityDto,
-    updateUserActivityDto: UpdateUserActivityDto,
-    request: Request,
-  ): Promise<any> {
-    let response = new ResponseStandard();
-    const cookie = request.cookies['jwt'];
-    const data = await this.jwtService.verifyAsync(cookie);
-    if (data['id']) {
-      let userActiv = await this.userActivityModel.findOne({
-        where: {
-          userId: { [Op.contains]: [data['id']] },
-          date: createUserActivityDto.date,
-          activityId: createUserActivityDto.activityId,
-        },
-      });
-      let ucID = [...userActiv.userIdConfirmed, data['id']];
-      let new_uID = userActiv.userId.filter((new_id) => new_id !== data['id']);
-      await userActiv.update({ userId: new_uID, userIdConfirmed: ucID });
-      return userActiv.userId.filter((new_id) => new_id !== data['id']);
-    }
-  }
+  // async updateConfirmedId(
+  //   createUserActivityDto: CreateUserActivityDto,
+  //   updateUserActivityDto: UpdateUserActivityDto,
+  //   request: Request,
+  // ): Promise<any> {
+  //   let response = new ResponseStandard();
+  //   const cookie = request.cookies['jwt'];
+  //   const data = await this.jwtService.verifyAsync(cookie);
+  //   if (data['id']) {
+  //     let userActiv = await this.userActivityModel.findOne({
+  //       where: {
+  //         userId: { [Op.contains]: [data['id']] },
+  //         date: createUserActivityDto.date,
+  //         activityId: createUserActivityDto.activityId,
+  //       },
+  //     });
+  //     let ucID = [...userActiv.userIdConfirmed, data['id']];
+  //     let new_uID = userActiv.userId.filter((new_id) => new_id !== data['id']);
+  //     await userActiv.update({ userId: new_uID, userIdConfirmed: ucID });
+  //     return userActiv.userId.filter((new_id) => new_id !== data['id']);
+  //   }
+  // }
 
   async cancelActivity(
     createUserActivityDto: CreateUserActivityDto,
@@ -484,9 +536,11 @@ export class UsersService
   }
 
   async getOneActivity(getOneActivityDto: GetOneActivityDto) {
-    return this.activityModel.findOne({where: {
-      id: getOneActivityDto.activityId
-    }})
+    return this.activityModel.findOne({
+      where: {
+        id: getOneActivityDto.activityId,
+      },
+    });
   }
 
   async getUserActivityName(

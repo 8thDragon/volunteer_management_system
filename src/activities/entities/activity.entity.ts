@@ -4,6 +4,7 @@ import { UserActivity } from "src/user-activities/entities/user-activity.entity"
 import { User } from "src/users/entities/user.entity";
 import { File } from "./file.entity";
 import { Notification } from "src/users/entities/notify.entity";
+import { Rating } from "./reting.entity";
 // import { PdfFile } from "./pdfFile.entity";
 
 export interface activityAttributes {
@@ -26,7 +27,7 @@ export interface activityAttributes {
     is_open?: boolean;
     picture?: string;
     priority?: number;
-    rate?: number;
+    ratings?: Rating[];
     files?: File[];
     userActivities?: UserActivity[];
     comments?: Comment;
@@ -93,8 +94,8 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
     @Column({ })
     priority?: number;
 
-    @Column({ })
-    rate?: number;
+    @Column({ defaultValue: 0, type: DataType.FLOAT })
+    rating_point?: number;
 
     @HasMany(() => UserActivity, {
         onUpdate: "CASCADE",
@@ -102,6 +103,13 @@ export class Activity extends Model<activityAttributes, activityAttributes> impl
         hooks: true
     })
     userActivities?: UserActivity[];
+
+    @HasMany(() => Rating, {
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        hooks: true
+    })
+    ratings?: Rating[];
 
     @HasMany(() => File, {
         onUpdate: "CASCADE",
