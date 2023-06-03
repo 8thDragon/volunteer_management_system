@@ -1,11 +1,19 @@
-version: "3"
+version: '3'
 services:
-  mysql:
-    image: mysql:8
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_DATABASE: volunteer_management
-      MYSQL_TCP_PORT: 3309
+  nestjs:
+    build:
+      context: .
+      dockerfile: dockerfile
     ports:
-      - "3309:3309"
+      - '8000:8000'
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: hogogo
+      POSTGRES_PASSWORD: hogogo2012
+      POSTGRES_DB: volunteer_management
+    ports:
+      - '5432:5432'

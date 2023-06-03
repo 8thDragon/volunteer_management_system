@@ -408,6 +408,32 @@ export class ActivitiesService {
     }
   }
 
+  async removeUserFromUserActivityForBlacklist(
+    removeUserDto: RemoveUserDto,
+    request: Request,
+  ) {
+    const cookie = request.cookies['jwt'];
+    const data = await this.jwtService.verifyAsync(cookie);
+    let admin = await this.userModel.findByPk(data['id']);
+    let userActiv = await this.userActivityModel.findOne({
+      where: {
+        id: removeUserDto.userActivityId,
+      },
+    });
+    if (userActiv && admin.admin == true) {
+      console.log(userActiv.userId);
+      let new_uID = userActiv.userId.filter(
+        (new_id) => new_id !== removeUserDto.userId,
+      );
+      await userActiv.update({ userId: new_uID });
+      return userActiv;
+    } else {
+      return {
+        message: 'errors',
+      };
+    }
+  }
+
   async postComment(commentDto: CommentDto, request: Request) {
     const cookie = request.cookies['jwt'];
     const data = await this.jwtService.verifyAsync(cookie);
