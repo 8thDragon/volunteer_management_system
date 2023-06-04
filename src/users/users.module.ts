@@ -26,6 +26,11 @@ import { Rating } from 'src/activities/entities/reting.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
+        dialectOptions: {
+          ssl: {
+            require: true
+          }
+        },
         autoLoadModels: true,
         synchronize: true,
         timezone: 'Asia/Bangkok',

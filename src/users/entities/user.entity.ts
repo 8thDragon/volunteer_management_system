@@ -109,6 +109,13 @@ export class User extends Model<userAttributes, userAttributes> implements userA
     @Exclude()
     password?: string;
 
+    // @HasMany(() => UserActivity, {
+    //   onUpdate: "CASCADE",
+    //   onDelete: "CASCADE",
+    //   hooks: true
+    // })
+    // userActivities?: UserActivity[];
+
     @HasMany(() => Comment, {
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
